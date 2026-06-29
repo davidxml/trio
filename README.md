@@ -9,7 +9,7 @@ Trio replaces scattered OS accessibility menus with a unified, profile-driven en
  * **Deaf / Hard of Hearing:** Live audio-to-visual captioning, with alerts mapped to aggressive haptic and visual flash patterns.
  * **Non-Verbal / Speech-Impaired:** Replaces standard voice inputs with a predictive tap-to-talk board and direct TTS bypass.
  * **Standard:** Baseline OS configuration.
-## AI & Data Processing
+## AI & Data Processing (Planned)
  * **Edge Compute:** Low-latency, on-device STT/TTS to power live captioning and predictive text without network bottlenecks.
 
 ## The Communication Bridge
