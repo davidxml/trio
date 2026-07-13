@@ -1,0 +1,39 @@
+package com.trio.presentation.launcher.components.shared
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import com.trio.domain.model.DeviceMode
+
+/**
+ * Owned by Nexus (Feature 1). Paired with ModeSwitcherFab.kt — this is the actual
+ * mode-selection UI. Dev B calls into ModeSwitcherFab, not this file directly.
+ */
+@Composable
+fun ModeSwitcherDialog(
+    currentMode: DeviceMode,
+    onModeSelected: (DeviceMode) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Switch mode") },
+        text = {
+            Column {
+                DeviceMode.entries.forEach { mode ->
+                    TextButton(
+                        onClick = { onModeSelected(mode) },
+                        enabled = mode != currentMode
+                    ) {
+                        Text(mode.name)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+}
