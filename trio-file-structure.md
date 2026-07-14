@@ -120,3 +120,4 @@ trio/
 ├── settings.gradle.kts
 └── README.md
 
+For the presentable version of this project (V1) the file structure has to be trimmed down.
