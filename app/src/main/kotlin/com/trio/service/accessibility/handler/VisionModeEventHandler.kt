@@ -7,6 +7,7 @@ import com.trio.service.tts.TtsQueueManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class VisionModeEventHandler(
@@ -46,6 +47,10 @@ class VisionModeEventHandler(
         scope.launch {
             ttsQueueManager.speak(text, flush)
         }
+    }
+
+    fun destroy() {
+        scope.cancel()
     }
 
     companion object {

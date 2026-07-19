@@ -31,6 +31,10 @@ class ModeEventHandlerFactory(
         DeviceMode.STANDARD, DeviceMode.SPEECH_IMPAIRED -> NoOpEventHandler
     }
 
+    fun destroy() {
+        visionHandler.destroy()
+    }
+
     private object NoOpEventHandler : ModeEventHandler {
         override fun handleEvent(event: AccessibilityEvent) = Unit
     }
