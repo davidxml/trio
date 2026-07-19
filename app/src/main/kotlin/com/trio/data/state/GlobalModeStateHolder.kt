@@ -8,10 +8,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,18 +18,14 @@ class GlobalModeStateHolder @Inject constructor(
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private val _mode = MutableStateFlow(
-        runBlocking(Dispatchers.IO) {
-            dataStore.modeFlow.first()
-        }
-    )
+    private val _mode = MutableStateFlow(DeviceMode.STANDARD)
 
     val mode: StateFlow<DeviceMode> = _mode.asStateFlow()
 
     init {
-        dataStore.modeFlow
-            .onEach { _mode.value = it }
-            .launchIn(scope)
+        scope.launch {
+            dataStore.modeFlow.collect { _mode.value = it }
+        }
     }
 
     suspend fun setMode(mode: DeviceMode) {
