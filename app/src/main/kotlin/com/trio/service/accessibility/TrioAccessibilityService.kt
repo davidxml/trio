@@ -9,6 +9,7 @@ import com.trio.service.accessibility.config.AccessibilityServiceConfig
 import com.trio.service.accessibility.handler.ModeEventHandler
 import com.trio.service.accessibility.handler.ModeEventHandlerFactory
 import com.trio.service.haptics.HapticFeedbackController
+import com.trio.service.hearing.HearingAlertStateHolder
 import com.trio.service.tts.TtsQueueManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -24,6 +25,7 @@ class TrioAccessibilityService : AccessibilityService() {
     @Inject lateinit var stateHolder: GlobalModeStateHolder
     @Inject lateinit var hapticController: HapticFeedbackController
     @Inject lateinit var ttsQueueManager: TtsQueueManager
+    @Inject lateinit var hearingAlertStateHolder: HearingAlertStateHolder
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var serviceConfig: AccessibilityServiceConfig? = null
@@ -33,7 +35,7 @@ class TrioAccessibilityService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         serviceConfig = AccessibilityServiceConfig(this)
-        handlerFactory = ModeEventHandlerFactory(this, hapticController, ttsQueueManager)
+        handlerFactory = ModeEventHandlerFactory(this, hapticController, ttsQueueManager, hearingAlertStateHolder)
 
         scope.launch {
             stateHolder.mode.collect { mode ->
