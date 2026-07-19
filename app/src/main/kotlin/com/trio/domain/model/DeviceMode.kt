@@ -1,4 +1,4 @@
-package com.trio.model
+package com.trio.domain.model
 
 enum class DeviceMode {
     Standard,
