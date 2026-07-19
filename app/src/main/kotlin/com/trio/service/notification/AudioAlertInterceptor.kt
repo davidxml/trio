@@ -17,7 +17,7 @@ class AudioAlertInterceptor @Inject constructor(
 ) {
 
     fun interceptNotification(title: String, body: String, importance: Int) {
-        Log.d(TAG, "Intercepting notification: $title (importance=$importance)")
+        Log.d(TAG, "Intercepting notification (importance=$importance)")
 
         flashController.flashForNotification(importance)
 
