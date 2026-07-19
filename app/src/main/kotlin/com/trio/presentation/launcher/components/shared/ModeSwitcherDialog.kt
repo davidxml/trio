@@ -27,7 +27,7 @@ fun ModeSwitcherDialog(
                         onClick = { onModeSelected(mode) },
                         enabled = mode != currentMode
                     ) {
-                        Text(mode.name)
+                        Text(mode.displayName)
                     }
                 }
             }

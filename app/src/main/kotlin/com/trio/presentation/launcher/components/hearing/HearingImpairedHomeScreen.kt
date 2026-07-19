@@ -25,7 +25,7 @@ fun HearingImpairedHomeScreen(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Deaf Mode",
+                text = "Hearing Impaired Mode",
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
