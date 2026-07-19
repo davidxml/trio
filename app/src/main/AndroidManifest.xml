@@ -35,6 +35,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".presentation.settings.SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Trio" />
+
         <service
             android:name=".service.accessibility.TrioAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
