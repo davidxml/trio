@@ -1,6 +1,6 @@
 package com.trio.service.camera
 
-import android.app.Notification
+import android.app.NotificationManager
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,8 +23,8 @@ class FlashAlertController @Inject constructor(
         if (!torchManager.isTorchAvailable) return
 
         val (onMs, offMs, count) = when {
-            importance >= Notification.IMPORTANCE_HIGH -> Triple(50L, 50L, 5)
-            importance >= Notification.IMPORTANCE_DEFAULT -> Triple(100L, 100L, 3)
+            importance >= NotificationManager.IMPORTANCE_HIGH -> Triple(50L, 50L, 5)
+            importance >= NotificationManager.IMPORTANCE_DEFAULT -> Triple(100L, 100L, 3)
             else -> Triple(200L, 0L, 1)
         }
 

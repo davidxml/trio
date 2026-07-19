@@ -240,7 +240,7 @@ private fun isAccessibilityServiceEnabled(context: Context): Boolean {
 private fun isNotificationListenerEnabled(context: Context): Boolean {
     val flat = Settings.Secure.getString(
         context.contentResolver,
-        Settings.Secure.ENABLED_NOTIFICATION_LISTENERS
+        "enabled_notification_listeners"
     ) ?: return false
     val componentName = ComponentName(context, TrioNotificationListenerService::class.java)
     return flat.contains(componentName.flattenToString())
