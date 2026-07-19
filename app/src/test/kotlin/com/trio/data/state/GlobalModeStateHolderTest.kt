@@ -2,19 +2,23 @@ package com.trio.data.state
 
 import com.trio.data.local.datastore.ModePreferencesDataStore
 import com.trio.domain.model.DeviceMode
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -23,22 +27,27 @@ class GlobalModeStateHolderTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val testScope = TestScope(testDispatcher)
+    private val holderScope = CoroutineScope(SupervisorJob() + testDispatcher)
     private lateinit var mockDataStore: ModePreferencesDataStore
     private lateinit var stateHolder: GlobalModeStateHolder
     private lateinit var fakeModeFlow: MutableStateFlow<DeviceMode>
 
     @Before
     fun setup() {
-        Dispatchers.setMain(testDispatcher)
         fakeModeFlow = MutableStateFlow(DeviceMode.STANDARD)
         mockDataStore = mock()
         whenever(mockDataStore.modeFlow).thenReturn(fakeModeFlow)
-        stateHolder = GlobalModeStateHolder(mockDataStore)
+        runBlocking {
+            doAnswer { fakeModeFlow.value = it.arguments[0] as DeviceMode }
+                .`when`(mockDataStore)
+                .setMode(any())
+        }
+        stateHolder = GlobalModeStateHolder(mockDataStore, holderScope)
     }
 
     @After
     fun tearDown() {
-        Dispatchers.resetMain()
+        holderScope.cancel()
     }
 
     @Test
