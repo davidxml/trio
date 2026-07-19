@@ -140,7 +140,7 @@ fun VisionImpairedHomeScreen(
                             },
                             hapticController = hapticController,
                             ttsAnnouncer = ttsAnnouncer,
-                            description = "${app.label}. Double tap to open.",
+                            description = stringResource(R.string.double_tap_open_template, app.label),
                             modifier = Modifier.weight(1f)
                         )
                     }
