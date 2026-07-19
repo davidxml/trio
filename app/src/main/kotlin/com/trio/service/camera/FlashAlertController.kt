@@ -52,6 +52,12 @@ class FlashAlertController @Inject constructor(
         }
     }
 
+    fun shutdown() {
+        activeSequence?.cancel()
+        activeSequence = null
+        scope.cancel()
+    }
+
     companion object {
         private const val TAG = "FlashAlertController"
     }
