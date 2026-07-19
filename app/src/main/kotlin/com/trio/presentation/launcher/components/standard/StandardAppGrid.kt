@@ -1,14 +1,14 @@
 package com.trio.presentation.launcher.components.standard
 
-import android.content.Context
 import android.content.Intent
-import android.content.pm.ResolveInfo
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,24 +33,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
+import com.trio.presentation.launcher.components.shared.LaunchableApp
+import com.trio.presentation.launcher.components.shared.queryLaunchableApps
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
-private data class InstalledApp(
-    val label: String,
-    val packageName: String,
-    val icon: Drawable?,
-    val intent: Intent
-)
 
 @Composable
 fun StandardAppGrid(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    var apps by remember { mutableStateOf<List<InstalledApp>>(emptyList()) }
+    var apps by remember { mutableStateOf<List<LaunchableApp>>(emptyList()) }
 
     LaunchedEffect(Unit) {
         apps = withContext(Dispatchers.IO) {
-            queryInstalledApps(context)
+            queryLaunchableApps(context)
         }
     }
 
@@ -61,8 +56,9 @@ fun StandardAppGrid(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(apps) { app ->
-            InstalledAppTile(
+            StandardAppTile(
                 app = app,
+                context = context,
                 onClick = {
                     app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(app.intent)
@@ -73,17 +69,22 @@ fun StandardAppGrid(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun InstalledAppTile(
-    app: InstalledApp,
+private fun StandardAppTile(
+    app: LaunchableApp,
+    context: android.content.Context,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val icon: Drawable? = remember(app.packageName) {
+        context.packageManager.getApplicationIcon(app.packageName)
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.clickable(onClick = onClick)
     ) {
-        val bitmap = remember(app.icon) {
-            app.icon?.toBitmap(96, 96)?.asImageBitmap()
+        val bitmap = remember(icon) {
+            icon?.toBitmap(96, 96)?.asImageBitmap()
         }
 
         if (bitmap != null) {
@@ -95,7 +96,7 @@ private fun InstalledAppTile(
                     .clip(RoundedCornerShape(14.dp))
             )
         } else {
-            androidx.compose.foundation.layout.Box(
+            Box(
                 modifier = Modifier
                     .size(56.dp)
                     .clip(RoundedCornerShape(14.dp))
@@ -110,7 +111,7 @@ private fun InstalledAppTile(
             }
         }
 
-        androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(top = 4.dp))
+        Spacer(modifier = Modifier.padding(top = 4.dp))
         Text(
             text = app.label,
             style = MaterialTheme.typography.bodySmall,
@@ -119,34 +120,4 @@ private fun InstalledAppTile(
             overflow = TextOverflow.Ellipsis
         )
     }
-}
-
-private fun queryInstalledApps(context: Context): List<InstalledApp> {
-    val intent = Intent(Intent.ACTION_MAIN).apply {
-        addCategory(Intent.CATEGORY_LAUNCHER)
-    }
-
-    val resolveInfos: List<ResolveInfo> = context.packageManager.queryIntentActivities(intent, 0)
-
-    return resolveInfos
-        .sortedBy { it.loadLabel(context.packageManager).toString().lowercase() }
-        .map { resolveInfo ->
-            val label = resolveInfo.loadLabel(context.packageManager).toString()
-            val packageName = resolveInfo.activityInfo.packageName
-            val icon = resolveInfo.loadIcon(context.packageManager)
-            val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
-                ?: Intent().apply {
-                    setClassName(
-                        packageName,
-                        resolveInfo.activityInfo.name
-                    )
-                }
-
-            InstalledApp(
-                label = label,
-                packageName = packageName,
-                icon = icon,
-                intent = launchIntent
-            )
-        }
 }
