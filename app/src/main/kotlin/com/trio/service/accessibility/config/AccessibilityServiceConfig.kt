@@ -40,7 +40,7 @@ class AccessibilityServiceConfig(private val service: AccessibilityService) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
         DeviceMode.STANDARD, DeviceMode.SPEECH_IMPAIRED ->
-            AccessibilityEvent.TYPE_ALL_MASK
+            0
     }
 
     companion object {
