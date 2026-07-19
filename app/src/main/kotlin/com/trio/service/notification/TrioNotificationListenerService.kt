@@ -7,6 +7,7 @@ import android.util.Log
 import com.trio.data.state.GlobalModeStateHolder
 import com.trio.domain.model.DeviceMode
 import com.trio.domain.repository.AccessibilityStateRepository
+import com.trio.service.hearing.HearingAlertStateHolder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ class TrioNotificationListenerService : NotificationListenerService() {
     @Inject lateinit var stateHolder: GlobalModeStateHolder
     @Inject lateinit var interceptor: AudioAlertInterceptor
     @Inject lateinit var accessibilityStateRepository: AccessibilityStateRepository
+    @Inject lateinit var alertStateHolder: HearingAlertStateHolder
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var currentMode: DeviceMode = DeviceMode.STANDARD
@@ -51,7 +53,11 @@ class TrioNotificationListenerService : NotificationListenerService() {
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
-        // No-op for now
+        sbn ?: return
+        val notification = sbn.notification ?: return
+        val extras = notification.extras ?: return
+        val title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString() ?: return
+        alertStateHolder.dismissAlertByTitle(title)
     }
 
     override fun onDestroy() {

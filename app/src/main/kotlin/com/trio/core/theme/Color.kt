@@ -19,3 +19,12 @@ val HighContrastSurface = Color(0xFF1A1A1A)
 val HighContrastOnSurface = Color(0xFFFFFF00)
 val HighContrastSurfaceVariant = Color(0xFF333333)
 val HighContrastOnSurfaceVariant = Color(0xFFFFCC00)
+
+val HearingPrimary = Color(0xFF6750A4)
+val HearingOnPrimary = Color.White
+val HearingBackground = Color(0xFFFFFBFE)
+val HearingOnBackground = Color(0xFF1C1B1F)
+val HearingSurface = Color(0xFFFFFBFE)
+val HearingOnSurface = Color(0xFF1C1B1F)
+val HearingSurfaceVariant = Color(0xFFE7E0EC)
+val HearingOnSurfaceVariant = Color(0xFF49454F)

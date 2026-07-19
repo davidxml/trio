@@ -1,5 +1,6 @@
 package com.trio.presentation.launcher.components.hearing
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -14,19 +15,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.trio.domain.model.DeviceMode
+import com.trio.presentation.launcher.components.shared.LaunchableApp
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
+import com.trio.presentation.launcher.components.shared.queryLaunchableApps
 import com.trio.service.haptics.HapticFeedbackController
 import com.trio.service.hearing.HearingAlertStateHolder
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
@@ -34,26 +42,6 @@ interface HearingModeEntryPoint {
     fun hapticController(): HapticFeedbackController
     fun alertStateHolder(): HearingAlertStateHolder
 }
-
-private data class HearingAppTile(
-    val label: String,
-    val description: String
-)
-
-private val hearingApps = listOf(
-    HearingAppTile("Phone", "Phone"),
-    HearingAppTile("Messages", "Messages"),
-    HearingAppTile("Camera", "Camera"),
-    HearingAppTile("Photos", "Photos"),
-    HearingAppTile("Chrome", "Chrome"),
-    HearingAppTile("Maps", "Maps"),
-    HearingAppTile("YouTube", "YouTube"),
-    HearingAppTile("Gmail", "Gmail"),
-    HearingAppTile("Calendar", "Calendar"),
-    HearingAppTile("Clock", "Clock"),
-    HearingAppTile("Files", "Files"),
-    HearingAppTile("Settings", "Settings")
-)
 
 @Composable
 fun HearingImpairedHomeScreen(
@@ -70,7 +58,12 @@ fun HearingImpairedHomeScreen(
     val hapticController = entryPoint.hapticController()
     val alertStateHolder = entryPoint.alertStateHolder()
 
+    var apps by remember { mutableStateOf<List<LaunchableApp>>(emptyList()) }
+
     LaunchedEffect(Unit) {
+        apps = withContext(Dispatchers.IO) {
+            queryLaunchableApps(context)
+        }
         hapticController.playNotificationPulse()
     }
 
@@ -110,7 +103,13 @@ fun HearingImpairedHomeScreen(
             item {
                 HearingTouchZone(
                     label = "Settings",
-                    onClick = { /* TODO: navigate to settings */ },
+                    onClick = {
+                        val intent = Intent("com.trio.action.OPEN_SETTINGS").apply {
+                            `package` = context.packageName
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        context.startActivity(intent)
+                    },
                     hapticController = hapticController,
                     description = "Settings",
                     modifier = Modifier.fillMaxWidth()
@@ -126,7 +125,7 @@ fun HearingImpairedHomeScreen(
                 )
             }
 
-            items(hearingApps.chunked(2)) { row ->
+            items(apps.chunked(2)) { row ->
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -134,9 +133,12 @@ fun HearingImpairedHomeScreen(
                     row.forEach { app ->
                         HearingTouchZone(
                             label = app.label,
-                            onClick = { /* TODO: launch app */ },
+                            onClick = {
+                                app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                context.startActivity(app.intent)
+                            },
                             hapticController = hapticController,
-                            description = app.description,
+                            description = app.label,
                             modifier = Modifier.weight(1f)
                         )
                     }

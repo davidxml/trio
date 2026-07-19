@@ -1,5 +1,6 @@
 package com.trio.presentation.launcher.components.vision
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -14,19 +15,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.trio.domain.model.DeviceMode
+import com.trio.presentation.launcher.components.shared.LaunchableApp
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
+import com.trio.presentation.launcher.components.shared.queryLaunchableApps
 import com.trio.service.haptics.HapticFeedbackController
 import com.trio.service.tts.TtsQueueManager
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
@@ -34,26 +42,6 @@ interface VisionModeEntryPoint {
     fun hapticController(): HapticFeedbackController
     fun ttsManager(): TtsQueueManager
 }
-
-private data class VisionAppTile(
-    val label: String,
-    val ttsDescription: String
-)
-
-private val visionApps = listOf(
-    VisionAppTile("Phone", "Phone. Double tap to open."),
-    VisionAppTile("Messages", "Messages. Double tap to open."),
-    VisionAppTile("Camera", "Camera. Double tap to open."),
-    VisionAppTile("Photos", "Photos. Double tap to open."),
-    VisionAppTile("Chrome", "Chrome browser. Double tap to open."),
-    VisionAppTile("Maps", "Maps. Double tap to open."),
-    VisionAppTile("YouTube", "YouTube. Double tap to open."),
-    VisionAppTile("Gmail", "Gmail. Double tap to open."),
-    VisionAppTile("Calendar", "Calendar. Double tap to open."),
-    VisionAppTile("Clock", "Clock. Double tap to open."),
-    VisionAppTile("Files", "Files. Double tap to open."),
-    VisionAppTile("Settings", "Settings. Double tap to open.")
-)
 
 @Composable
 fun VisionImpairedHomeScreen(
@@ -71,7 +59,12 @@ fun VisionImpairedHomeScreen(
     val ttsManager = entryPoint.ttsManager()
     val ttsAnnouncer = rememberTtsAnnouncer(ttsManager)
 
+    var apps by remember { mutableStateOf<List<LaunchableApp>>(emptyList()) }
+
     LaunchedEffect(Unit) {
+        apps = withContext(Dispatchers.IO) {
+            queryLaunchableApps(context)
+        }
         ttsAnnouncer.announce("Vision Impaired Mode activated. Swipe to explore items.")
     }
 
@@ -108,7 +101,13 @@ fun VisionImpairedHomeScreen(
             item {
                 HighContrastTouchZone(
                     label = "Settings",
-                    onClick = { /* TODO: navigate to settings */ },
+                    onClick = {
+                        val intent = Intent("com.trio.action.OPEN_SETTINGS").apply {
+                            `package` = context.packageName
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        context.startActivity(intent)
+                    },
                     hapticController = hapticController,
                     ttsAnnouncer = ttsAnnouncer,
                     description = "Settings. Double tap to open.",
@@ -125,7 +124,7 @@ fun VisionImpairedHomeScreen(
                 )
             }
 
-            items(visionApps.chunked(2)) { row ->
+            items(apps.chunked(2)) { row ->
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -133,10 +132,13 @@ fun VisionImpairedHomeScreen(
                     row.forEach { app ->
                         HighContrastTouchZone(
                             label = app.label,
-                            onClick = { /* TODO: launch app */ },
+                            onClick = {
+                                app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                context.startActivity(app.intent)
+                            },
                             hapticController = hapticController,
                             ttsAnnouncer = ttsAnnouncer,
-                            description = app.ttsDescription,
+                            description = "${app.label}. Double tap to open.",
                             modifier = Modifier.weight(1f)
                         )
                     }
