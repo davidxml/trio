@@ -1,6 +1,6 @@
 package com.trio.service.notification
 
-import android.app.Notification
+import android.app.NotificationManager
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.trio.service.camera.FlashAlertController
@@ -21,7 +21,7 @@ class AudioAlertInterceptor @Inject constructor(
 
         flashController.flashForNotification(importance)
 
-        if (importance >= Notification.IMPORTANCE_HIGH) {
+        if (importance >= NotificationManager.IMPORTANCE_HIGH) {
             hapticController.playUrgentAlert()
         } else {
             hapticController.playNotificationPulse()
