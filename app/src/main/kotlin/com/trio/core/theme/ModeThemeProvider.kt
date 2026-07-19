@@ -34,13 +34,14 @@ fun ModeThemeProvider(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when (mode) {
-        DeviceMode.Standard -> StandardColorScheme
-        DeviceMode.VisionImpaired -> HighContrastColorScheme
-        DeviceMode.Deaf -> StandardColorScheme
+        DeviceMode.STANDARD -> StandardColorScheme
+        DeviceMode.VISION_IMPAIRED -> HighContrastColorScheme
+        DeviceMode.HEARING_IMPAIRED -> StandardColorScheme
+        DeviceMode.SPEECH_IMPAIRED -> StandardColorScheme
     }
 
     val typography = when (mode) {
-        DeviceMode.VisionImpaired -> LargeScaleTypography
+        DeviceMode.VISION_IMPAIRED -> LargeScaleTypography
         else -> StandardTypography
     }
 

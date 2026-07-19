@@ -5,7 +5,7 @@ import com.trio.domain.model.DeviceMode
 
 @Composable
 fun TrioTheme(
-    mode: DeviceMode = DeviceMode.Standard,
+    mode: DeviceMode = DeviceMode.STANDARD,
     content: @Composable () -> Unit
 ) {
     ModeThemeProvider(mode = mode, content = content)

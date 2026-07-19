@@ -26,15 +26,19 @@ class LauncherActivity : ComponentActivity() {
 
             TrioTheme(mode = mode) {
                 when (mode) {
-                    DeviceMode.Standard -> StandardHomeScreen(
+                    DeviceMode.STANDARD -> StandardHomeScreen(
                         currentMode = mode,
                         onModeSelected = viewModel::setMode
                     )
-                    DeviceMode.VisionImpaired -> VisionImpairedHomeScreen(
+                    DeviceMode.VISION_IMPAIRED -> VisionImpairedHomeScreen(
                         currentMode = mode,
                         onModeSelected = viewModel::setMode
                     )
-                    DeviceMode.Deaf -> HearingImpairedHomeScreen(
+                    DeviceMode.HEARING_IMPAIRED -> HearingImpairedHomeScreen(
+                        currentMode = mode,
+                        onModeSelected = viewModel::setMode
+                    )
+                    DeviceMode.SPEECH_IMPAIRED -> StandardHomeScreen(
                         currentMode = mode,
                         onModeSelected = viewModel::setMode
                     )
