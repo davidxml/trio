@@ -50,6 +50,10 @@ class HearingAlertStateHolder @Inject constructor() {
         }
     }
 
+    fun dismissAlertByTitle(title: String) {
+        _pendingAlerts.value = _pendingAlerts.value.filter { it.title != title }
+    }
+
     companion object {
         private const val MAX_CAPTIONS = 20
         private const val MAX_ALERTS = 10
