@@ -34,4 +34,8 @@ class GlobalModeStateHolder @Inject constructor(
             .onEach { _mode.value = it }
             .launchIn(scope)
     }
+
+    suspend fun setMode(mode: DeviceMode) {
+        dataStore.setMode(mode)
+    }
 }

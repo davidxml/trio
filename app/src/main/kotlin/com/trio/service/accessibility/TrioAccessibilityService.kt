@@ -1,7 +1,10 @@
 package com.trio.service.accessibility
 
 import android.accessibilityservice.AccessibilityService
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import com.trio.data.state.GlobalModeStateHolder
 import com.trio.domain.model.DeviceMode
@@ -28,9 +31,14 @@ class TrioAccessibilityService : AccessibilityService() {
     @Inject lateinit var hearingAlertStateHolder: HearingAlertStateHolder
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val handler = Handler(Looper.getMainLooper())
     private var serviceConfig: AccessibilityServiceConfig? = null
     private var handlerFactory: ModeEventHandlerFactory? = null
     private var currentHandler: ModeEventHandler? = null
+
+    private var volumeUpPressed = false
+    private var volumeDownPressed = false
+    private var escapeHatchRunnable: Runnable? = null
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -52,16 +60,53 @@ class TrioAccessibilityService : AccessibilityService() {
         currentHandler?.handleEvent(event)
     }
 
+    override fun onKeyEvent(event: KeyEvent): Boolean {
+        when (event.keyCode) {
+            KeyEvent.KEYCODE_VOLUME_UP -> {
+                volumeUpPressed = event.action == KeyEvent.ACTION_DOWN
+                checkEscapeHatch()
+                return true
+            }
+            KeyEvent.KEYCODE_VOLUME_DOWN -> {
+                volumeDownPressed = event.action == KeyEvent.ACTION_DOWN
+                checkEscapeHatch()
+                return true
+            }
+        }
+        return super.onKeyEvent(event)
+    }
+
+    private fun checkEscapeHatch() {
+        escapeHatchRunnable?.let { handler.removeCallbacks(it) }
+        escapeHatchRunnable = null
+
+        if (volumeUpPressed && volumeDownPressed) {
+            Log.d(TAG, "Escape hatch: both volume buttons pressed, starting 5s timer")
+            escapeHatchRunnable = Runnable {
+                if (volumeUpPressed && volumeDownPressed) {
+                    Log.w(TAG, "ESCAPE HATCH TRIGGERED — forcing STANDARD mode")
+                    hapticController.playUrgentAlert()
+                    scope.launch {
+                        stateHolder.setMode(DeviceMode.STANDARD)
+                    }
+                }
+            }
+            handler.postDelayed(escapeHatchRunnable!!, ESCAPE_HATCH_DELAY_MS)
+        }
+    }
+
     override fun onInterrupt() {
         Log.d(TAG, "Service interrupted")
     }
 
     override fun onDestroy() {
+        escapeHatchRunnable?.let { handler.removeCallbacks(it) }
         scope.cancel()
         super.onDestroy()
     }
 
     companion object {
         private const val TAG = "TrioAccessibilityService"
+        private const val ESCAPE_HATCH_DELAY_MS = 5000L
     }
 }
