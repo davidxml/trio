@@ -1,7 +1,6 @@
 package com.trio.service.accessibility.handler
 
 import android.accessibilityservice.AccessibilityService
-import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.trio.service.hearing.HearingAlertStateHolder
 
@@ -23,7 +22,6 @@ class HearingModeEventHandler(
             ?: event.className?.toString()
             ?: return
 
-        Log.d(TAG, "Window state changed: $text")
         alertStateHolder.pushCaption(text = text, source = "System")
     }
 
@@ -32,11 +30,6 @@ class HearingModeEventHandler(
             ?: event.source?.contentDescription?.toString()
             ?: return
 
-        Log.d(TAG, "Window content changed: $text")
         alertStateHolder.pushCaption(text = text, source = "Screen")
-    }
-
-    companion object {
-        private const val TAG = "HearingModeHandler"
     }
 }
