@@ -52,6 +52,7 @@ class TrioNotificationListenerService : NotificationListenerService() {
     }
 
     override fun onDestroy() {
+        interceptor.shutdown()
         scope.cancel()
         super.onDestroy()
     }
