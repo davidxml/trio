@@ -1,0 +1,62 @@
+package com.trio.service.accessibility
+
+import android.accessibilityservice.AccessibilityService
+import android.util.Log
+import android.view.accessibility.AccessibilityEvent
+import com.trio.data.state.GlobalModeStateHolder
+import com.trio.domain.model.DeviceMode
+import com.trio.service.accessibility.config.AccessibilityServiceConfig
+import com.trio.service.accessibility.handler.ModeEventHandler
+import com.trio.service.accessibility.handler.ModeEventHandlerFactory
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@AndroidEntryPoint
+class TrioAccessibilityService : AccessibilityService() {
+
+    @Inject
+    lateinit var stateHolder: GlobalModeStateHolder
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private var serviceConfig: AccessibilityServiceConfig? = null
+    private var handlerFactory: ModeEventHandlerFactory? = null
+    private var currentHandler: ModeEventHandler? = null
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        serviceConfig = AccessibilityServiceConfig(this)
+        handlerFactory = ModeEventHandlerFactory(this)
+
+        scope.launch {
+            stateHolder.mode.collect { mode ->
+                Log.d(TAG, "Mode changed: $mode")
+                serviceConfig?.updateForMode(mode)
+                currentHandler = handlerFactory?.getHandler(mode)
+                Log.d(TAG, "Handler swapped to: ${currentHandler?.javaClass?.simpleName}")
+            }
+        }
+    }
+
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        event ?: return
+        currentHandler?.handleEvent(event)
+    }
+
+    override fun onInterrupt() {
+        Log.d(TAG, "Service interrupted")
+    }
+
+    override fun onDestroy() {
+        scope.cancel()
+        super.onDestroy()
+    }
+
+    companion object {
+        private const val TAG = "TrioAccessibilityService"
+    }
+}
