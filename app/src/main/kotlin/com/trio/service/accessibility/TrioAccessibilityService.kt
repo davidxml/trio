@@ -101,6 +101,7 @@ class TrioAccessibilityService : AccessibilityService() {
 
     override fun onDestroy() {
         escapeHatchRunnable?.let { handler.removeCallbacks(it) }
+        ttsQueueManager.shutdown()
         scope.cancel()
         super.onDestroy()
     }

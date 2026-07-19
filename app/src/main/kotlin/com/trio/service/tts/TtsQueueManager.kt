@@ -26,4 +26,8 @@ class TtsQueueManager @Inject constructor(
     fun stop() {
         ttsEngine.stop()
     }
+
+    fun shutdown() {
+        ttsEngine.shutdown()
+    }
 }
