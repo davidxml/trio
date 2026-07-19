@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.view.accessibility.AccessibilityEvent
 import com.trio.domain.model.DeviceMode
 import com.trio.service.haptics.HapticFeedbackController
+import com.trio.service.hearing.HearingAlertStateHolder
 import com.trio.service.tts.TtsQueueManager
 
 interface ModeEventHandler {
@@ -13,13 +14,16 @@ interface ModeEventHandler {
 class ModeEventHandlerFactory(
     private val service: AccessibilityService,
     private val hapticController: HapticFeedbackController,
-    private val ttsQueueManager: TtsQueueManager
+    private val ttsQueueManager: TtsQueueManager,
+    private val hearingAlertStateHolder: HearingAlertStateHolder
 ) {
 
     private val visionHandler by lazy {
         VisionModeEventHandler(service, hapticController, ttsQueueManager)
     }
-    private val hearingHandler by lazy { HearingModeEventHandler(service) }
+    private val hearingHandler by lazy {
+        HearingModeEventHandler(service, hearingAlertStateHolder)
+    }
 
     fun getHandler(mode: DeviceMode): ModeEventHandler = when (mode) {
         DeviceMode.VISION_IMPAIRED -> visionHandler

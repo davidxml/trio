@@ -25,6 +25,18 @@ class HapticFeedbackController @Inject constructor(
         }
     }
 
+    fun playUrgentAlert() {
+        if (vibratorWrapper.hasAmplitudeControl) {
+            vibratorWrapper.vibrate(HapticPatternLibrary.URGENT_ALERT)
+        }
+    }
+
+    fun playNotificationPulse() {
+        if (vibratorWrapper.hasAmplitudeControl) {
+            vibratorWrapper.vibrate(HapticPatternLibrary.NOTIFICATION_PULSE)
+        }
+    }
+
     fun cancel() {
         vibratorWrapper.cancel()
     }
