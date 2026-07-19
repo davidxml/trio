@@ -6,6 +6,7 @@ import android.service.notification.StatusBarNotification
 import android.util.Log
 import com.trio.data.state.GlobalModeStateHolder
 import com.trio.domain.model.DeviceMode
+import com.trio.domain.repository.AccessibilityStateRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,12 +20,14 @@ class TrioNotificationListenerService : NotificationListenerService() {
 
     @Inject lateinit var stateHolder: GlobalModeStateHolder
     @Inject lateinit var interceptor: AudioAlertInterceptor
+    @Inject lateinit var accessibilityStateRepository: AccessibilityStateRepository
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var currentMode: DeviceMode = DeviceMode.STANDARD
 
     override fun onCreate() {
         super.onCreate()
+        accessibilityStateRepository.onNotificationListenerConnected()
         scope.launch {
             stateHolder.mode.collect { mode ->
                 currentMode = mode
@@ -53,6 +56,7 @@ class TrioNotificationListenerService : NotificationListenerService() {
 
     override fun onDestroy() {
         interceptor.shutdown()
+        accessibilityStateRepository.onNotificationListenerDisconnected()
         scope.cancel()
         super.onDestroy()
     }
