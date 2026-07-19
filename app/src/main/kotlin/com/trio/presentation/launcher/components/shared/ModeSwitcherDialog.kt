@@ -5,6 +5,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.trio.R
 import com.trio.domain.model.DeviceMode
 
 /**
@@ -19,7 +21,7 @@ fun ModeSwitcherDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Switch mode") },
+        title = { Text(stringResource(R.string.switch_mode)) },
         text = {
             Column {
                 DeviceMode.entries.forEach { mode ->
@@ -33,7 +35,7 @@ fun ModeSwitcherDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
         }
     )
 }

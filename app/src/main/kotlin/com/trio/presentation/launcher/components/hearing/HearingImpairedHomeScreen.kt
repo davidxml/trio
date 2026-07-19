@@ -22,7 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.trio.R
 import com.trio.domain.model.DeviceMode
 import com.trio.presentation.launcher.components.shared.LaunchableApp
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
@@ -80,7 +82,7 @@ fun HearingImpairedHomeScreen(
 
             item {
                 Text(
-                    text = "Trio",
+                    text = stringResource(R.string.app_name),
                     style = MaterialTheme.typography.displayLarge,
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -92,17 +94,17 @@ fun HearingImpairedHomeScreen(
 
             item {
                 HearingTouchZone(
-                    label = "Switch to Standard Mode",
+                    label = stringResource(R.string.switch_to_standard),
                     onClick = { onModeSelected(DeviceMode.STANDARD) },
                     hapticController = hapticController,
-                    description = "Switch to Standard Mode",
+                    description = stringResource(R.string.switch_to_standard),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
             item {
                 HearingTouchZone(
-                    label = "Settings",
+                    label = stringResource(R.string.settings),
                     onClick = {
                         val intent = Intent("com.trio.action.OPEN_SETTINGS").apply {
                             `package` = context.packageName
@@ -111,7 +113,7 @@ fun HearingImpairedHomeScreen(
                         context.startActivity(intent)
                     },
                     hapticController = hapticController,
-                    description = "Settings",
+                    description = stringResource(R.string.settings),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -119,7 +121,7 @@ fun HearingImpairedHomeScreen(
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Applications",
+                    text = stringResource(R.string.applications),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )

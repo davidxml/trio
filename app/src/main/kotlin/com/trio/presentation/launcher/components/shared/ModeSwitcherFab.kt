@@ -10,6 +10,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.trio.R
 import com.trio.domain.model.DeviceMode
 
 /**
@@ -26,7 +28,7 @@ fun ModeSwitcherFab(
     var showDialog by remember { mutableStateOf(false) }
 
     FloatingActionButton(onClick = { showDialog = true }, modifier = modifier) {
-        Icon(imageVector = Icons.Filled.SwapHoriz, contentDescription = "Switch mode")
+        Icon(imageVector = Icons.Filled.SwapHoriz, contentDescription = stringResource(R.string.switch_mode))
     }
 
     if (showDialog) {

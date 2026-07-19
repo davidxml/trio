@@ -15,6 +15,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.trio.R
 import com.trio.core.theme.TrioTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -34,7 +36,7 @@ class SettingsActivity : ComponentActivity() {
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text("Trio Settings") },
+                            title = { Text(stringResource(R.string.trio_settings)) },
                             colors = TopAppBarDefaults.topAppBarColors(
                                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                                 titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer

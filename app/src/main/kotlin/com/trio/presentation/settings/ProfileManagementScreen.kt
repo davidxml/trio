@@ -34,7 +34,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.trio.R
 import com.trio.data.local.db.UserProfileEntity
 
 @Composable
@@ -57,14 +59,14 @@ fun ProfileManagementScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "User Profiles",
+                text = stringResource(R.string.user_profiles),
                 style = MaterialTheme.typography.headlineMedium
             )
 
             IconButton(onClick = { showAddDialog = true }) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = "Add profile"
+                    contentDescription = stringResource(R.string.add_profile)
                 )
             }
         }
@@ -135,7 +137,7 @@ private fun ProfileCard(
                         )
                         if (isCurrent) {
                             Text(
-                                text = "Active",
+                                text = stringResource(R.string.active),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -147,7 +149,7 @@ private fun ProfileCard(
                     IconButton(onClick = onDelete) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
-                            contentDescription = "Delete profile"
+                            contentDescription = stringResource(R.string.delete_profile)
                         )
                     }
                 }
@@ -155,7 +157,7 @@ private fun ProfileCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Text(text = "Text Scale: %.1fx".format(profile.textScale))
+            Text(text = stringResource(R.string.text_scale, profile.textScale))
             Slider(
                 value = profile.textScale,
                 onValueChange = onTextScaleChange,
@@ -165,7 +167,7 @@ private fun ProfileCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(text = "Haptic Intensity: %.0f%%".format(profile.hapticIntensity * 100))
+            Text(text = stringResource(R.string.haptic_intensity, profile.hapticIntensity * 100))
             Slider(
                 value = profile.hapticIntensity,
                 onValueChange = onHapticIntensityChange,
@@ -185,12 +187,12 @@ private fun AddProfileDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Profile") },
+        title = { Text(stringResource(R.string.add_profile_title)) },
         text = {
             TextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Profile Name") },
+                label = { Text(stringResource(R.string.profile_name)) },
                 singleLine = true
             )
         },
@@ -199,12 +201,12 @@ private fun AddProfileDialog(
                 onClick = { onConfirm(name) },
                 enabled = name.isNotBlank()
             ) {
-                Text("Add")
+                Text(stringResource(R.string.add))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
