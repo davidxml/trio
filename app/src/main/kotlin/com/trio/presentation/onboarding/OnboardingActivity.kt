@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.trio.core.theme.TrioTheme
+import com.trio.core.util.EncryptedPrefsFactory
 import com.trio.presentation.launcher.LauncherActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,8 +19,8 @@ class OnboardingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val prefs = getSharedPreferences("trio_prefs", MODE_PRIVATE)
-        if (prefs.getBoolean("onboarding_complete", false)) {
+        val prefs = EncryptedPrefsFactory.create(this, PREFS_NAME)
+        if (prefs.getBoolean(KEY_ONBOARDING_COMPLETE, false)) {
             startActivity(Intent(this, LauncherActivity::class.java))
             finish()
             return
@@ -34,7 +35,7 @@ class OnboardingActivity : ComponentActivity() {
                     AccessibilityPermissionScreen(
                         onCompleted = {
                             prefs.edit()
-                                .putBoolean("onboarding_complete", true)
+                                .putBoolean(KEY_ONBOARDING_COMPLETE, true)
                                 .apply()
 
                             startActivity(Intent(this@OnboardingActivity, LauncherActivity::class.java))
@@ -44,5 +45,10 @@ class OnboardingActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val PREFS_NAME = "trio_onboarding_prefs"
+        private const val KEY_ONBOARDING_COMPLETE = "onboarding_complete"
     }
 }
