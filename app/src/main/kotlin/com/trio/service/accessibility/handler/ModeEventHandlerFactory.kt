@@ -10,9 +10,12 @@ interface ModeEventHandler {
 
 class ModeEventHandlerFactory(private val service: AccessibilityService) {
 
+    private val visionHandler by lazy { VisionModeEventHandler(service) }
+    private val hearingHandler by lazy { HearingModeEventHandler(service) }
+
     fun getHandler(mode: DeviceMode): ModeEventHandler = when (mode) {
-        DeviceMode.VISION_IMPAIRED -> VisionModeEventHandler(service)
-        DeviceMode.HEARING_IMPAIRED -> HearingModeEventHandler(service)
+        DeviceMode.VISION_IMPAIRED -> visionHandler
+        DeviceMode.HEARING_IMPAIRED -> hearingHandler
         DeviceMode.STANDARD, DeviceMode.SPEECH_IMPAIRED -> NoOpEventHandler
     }
 

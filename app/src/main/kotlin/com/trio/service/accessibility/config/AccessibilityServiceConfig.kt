@@ -21,8 +21,7 @@ class AccessibilityServiceConfig(private val service: AccessibilityService) {
     private fun flagsForMode(mode: DeviceMode): Int = when (mode) {
         DeviceMode.VISION_IMPAIRED ->
             AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE or
-            AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
-            AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
+            AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
         DeviceMode.HEARING_IMPAIRED ->
             AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS or
             AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
