@@ -7,6 +7,7 @@ import com.trio.service.tts.TtsQueueManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class VisionModeEventHandler(
@@ -25,8 +26,11 @@ class VisionModeEventHandler(
     }
 
     private fun onHoverEnter(event: AccessibilityEvent) {
-        val description = event.source?.contentDescription?.toString()
-            ?: event.source?.text?.toString()
+        val nodeInfo = event.source ?: return
+        if (nodeInfo.isPassword) return
+
+        val description = nodeInfo.contentDescription?.toString()
+            ?: nodeInfo.text?.toString()
             ?: return
 
         hapticController.playTick()
@@ -34,8 +38,11 @@ class VisionModeEventHandler(
     }
 
     private fun onViewClicked(event: AccessibilityEvent) {
-        val description = event.source?.text?.toString()
-            ?: event.source?.contentDescription?.toString()
+        val nodeInfo = event.source ?: return
+        if (nodeInfo.isPassword) return
+
+        val description = nodeInfo.text?.toString()
+            ?: nodeInfo.contentDescription?.toString()
             ?: return
 
         hapticController.playConfirmation()
@@ -46,6 +53,10 @@ class VisionModeEventHandler(
         scope.launch {
             ttsQueueManager.speak(text, flush)
         }
+    }
+
+    fun destroy() {
+        scope.cancel()
     }
 
     companion object {

@@ -8,10 +8,20 @@
 
     <application
         android:name=".TrioApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="Trio"
         android:theme="@style/Theme.Trio">
+
+        <activity
+            android:name=".presentation.onboarding.OnboardingActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Trio">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".presentation.launcher.LauncherActivity"
@@ -22,9 +32,13 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".presentation.settings.SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Trio" />
 
         <service
             android:name=".service.accessibility.TrioAccessibilityService"

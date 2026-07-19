@@ -21,12 +21,15 @@ class AccessibilityServiceConfig(private val service: AccessibilityService) {
     private fun flagsForMode(mode: DeviceMode): Int = when (mode) {
         DeviceMode.VISION_IMPAIRED ->
             AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE or
-            AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+            AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
+            AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
         DeviceMode.HEARING_IMPAIRED ->
             AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS or
-            AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+            AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
+            AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
         DeviceMode.STANDARD, DeviceMode.SPEECH_IMPAIRED ->
-            AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+            AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
+            AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
     }
 
     private fun eventTypesForMode(mode: DeviceMode): Int = when (mode) {
@@ -37,7 +40,7 @@ class AccessibilityServiceConfig(private val service: AccessibilityService) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
         DeviceMode.STANDARD, DeviceMode.SPEECH_IMPAIRED ->
-            AccessibilityEvent.TYPE_ALL_MASK
+            0
     }
 
     companion object {
