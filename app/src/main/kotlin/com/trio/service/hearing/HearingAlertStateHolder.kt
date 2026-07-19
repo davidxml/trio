@@ -30,12 +30,16 @@ class HearingAlertStateHolder @Inject constructor() {
 
     fun pushCaption(text: String, source: String) {
         val entry = CaptionEntry(text = text, source = source)
-        _recentCaptions.value = listOf(entry) + _recentCaptions.value.take(MAX_CAPTIONS - 1)
+        _recentCaptions.value = listOf(entry) + _recentCaptions.value
+            .filter { System.currentTimeMillis() - it.timestamp < CAPTION_TTL_MS }
+            .take(MAX_CAPTIONS - 1)
     }
 
     fun pushAlert(title: String, body: String, importance: Int) {
         val event = AlertEvent(title = title, body = body, importance = importance)
-        _pendingAlerts.value = listOf(event) + _pendingAlerts.value.take(MAX_ALERTS - 1)
+        _pendingAlerts.value = listOf(event) + _pendingAlerts.value
+            .filter { System.currentTimeMillis() - it.timestamp < ALERT_TTL_MS }
+            .take(MAX_ALERTS - 1)
     }
 
     fun dismissAlert(index: Int) {
@@ -49,5 +53,7 @@ class HearingAlertStateHolder @Inject constructor() {
     companion object {
         private const val MAX_CAPTIONS = 20
         private const val MAX_ALERTS = 10
+        private const val ALERT_TTL_MS = 60_000L
+        private const val CAPTION_TTL_MS = 30_000L
     }
 }
