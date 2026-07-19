@@ -10,6 +10,7 @@ import com.trio.data.state.UserProfileStateHolder
 import com.trio.core.theme.TrioTheme
 import com.trio.domain.model.DeviceMode
 import com.trio.presentation.launcher.components.hearing.HearingImpairedHomeScreen
+import com.trio.presentation.launcher.components.speech.SpeechImpairedHomeScreen
 import com.trio.presentation.launcher.components.standard.StandardHomeScreen
 import com.trio.presentation.launcher.components.vision.VisionImpairedHomeScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,7 +43,7 @@ class LauncherActivity : ComponentActivity() {
                         currentMode = mode,
                         onModeSelected = viewModel::setMode
                     )
-                    DeviceMode.SPEECH_IMPAIRED -> StandardHomeScreen(
+                    DeviceMode.SPEECH_IMPAIRED -> SpeechImpairedHomeScreen(
                         currentMode = mode,
                         onModeSelected = viewModel::setMode
                     )

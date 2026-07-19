@@ -27,7 +27,10 @@ class AccessibilityServiceConfig(private val service: AccessibilityService) {
             AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS or
             AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
             AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
-        DeviceMode.STANDARD, DeviceMode.SPEECH_IMPAIRED ->
+        DeviceMode.SPEECH_IMPAIRED ->
+            AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
+            AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
+        DeviceMode.STANDARD ->
             AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
             AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
     }
@@ -39,7 +42,10 @@ class AccessibilityServiceConfig(private val service: AccessibilityService) {
         DeviceMode.HEARING_IMPAIRED ->
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-        DeviceMode.STANDARD, DeviceMode.SPEECH_IMPAIRED ->
+        DeviceMode.SPEECH_IMPAIRED ->
+            AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED or
+            AccessibilityEvent.TYPE_VIEW_FOCUSED
+        DeviceMode.STANDARD ->
             0
     }
 

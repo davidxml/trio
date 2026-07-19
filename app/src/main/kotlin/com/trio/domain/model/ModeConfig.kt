@@ -5,7 +5,8 @@ data class ModeConfig(
     val isHapticGuidanceEnabled: Boolean = false,
     val isVisualAlertEnabled: Boolean = false,
     val isFlashAlertEnabled: Boolean = false,
-    val isLiveCaptionEnabled: Boolean = false
+    val isLiveCaptionEnabled: Boolean = false,
+    val isSpeechToTextEnabled: Boolean = false
 ) {
     companion object {
         fun forMode(mode: DeviceMode): ModeConfig = when (mode) {
@@ -20,7 +21,10 @@ data class ModeConfig(
                 isLiveCaptionEnabled = true,
                 isHapticGuidanceEnabled = true
             )
-            DeviceMode.SPEECH_IMPAIRED -> ModeConfig()
+            DeviceMode.SPEECH_IMPAIRED -> ModeConfig(
+                isSpeechToTextEnabled = true,
+                isHapticGuidanceEnabled = true
+            )
         }
     }
 }
