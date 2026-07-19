@@ -14,6 +14,16 @@
         android:theme="@style/Theme.Trio">
 
         <activity
+            android:name=".presentation.onboarding.OnboardingActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Trio">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".presentation.launcher.LauncherActivity"
             android:exported="true"
             android:launchMode="singleTask"
@@ -22,7 +32,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
