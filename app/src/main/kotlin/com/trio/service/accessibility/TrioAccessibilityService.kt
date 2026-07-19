@@ -8,6 +8,7 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import com.trio.data.state.GlobalModeStateHolder
 import com.trio.domain.model.DeviceMode
+import com.trio.domain.repository.AccessibilityStateRepository
 import com.trio.service.accessibility.config.AccessibilityServiceConfig
 import com.trio.service.accessibility.handler.ModeEventHandler
 import com.trio.service.accessibility.handler.ModeEventHandlerFactory
@@ -29,6 +30,7 @@ class TrioAccessibilityService : AccessibilityService() {
     @Inject lateinit var hapticController: HapticFeedbackController
     @Inject lateinit var ttsQueueManager: TtsQueueManager
     @Inject lateinit var hearingAlertStateHolder: HearingAlertStateHolder
+    @Inject lateinit var accessibilityStateRepository: AccessibilityStateRepository
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val handler = Handler(Looper.getMainLooper())
@@ -42,6 +44,7 @@ class TrioAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        accessibilityStateRepository.onAccessibilityServiceConnected()
         serviceConfig = AccessibilityServiceConfig(this)
         handlerFactory = ModeEventHandlerFactory(this, hapticController, ttsQueueManager, hearingAlertStateHolder)
 
@@ -103,6 +106,7 @@ class TrioAccessibilityService : AccessibilityService() {
         escapeHatchRunnable?.let { handler.removeCallbacks(it) }
         handlerFactory?.destroy()
         ttsQueueManager.shutdown()
+        accessibilityStateRepository.onAccessibilityServiceDisconnected()
         scope.cancel()
         super.onDestroy()
     }

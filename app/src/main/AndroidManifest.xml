@@ -38,7 +38,12 @@
         <activity
             android:name=".presentation.settings.SettingsActivity"
             android:exported="false"
-            android:theme="@style/Theme.Trio" />
+            android:theme="@style/Theme.Trio">
+            <intent-filter>
+                <action android:name="com.trio.action.OPEN_SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".service.accessibility.TrioAccessibilityService"

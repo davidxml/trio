@@ -30,6 +30,10 @@ class AudioAlertInterceptor @Inject constructor(
         alertStateHolder.pushAlert(title = title, body = body, importance = importance)
     }
 
+    fun shutdown() {
+        flashController.shutdown()
+    }
+
     fun interceptAccessibilityEvent(event: AccessibilityEvent) {
         val text = event.source?.text?.toString()
             ?: event.source?.contentDescription?.toString()
