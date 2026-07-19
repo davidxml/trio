@@ -5,8 +5,7 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
+import com.trio.core.util.EncryptedPrefsFactory
 import java.security.KeyStore
 import java.security.SecureRandom
 import javax.crypto.KeyGenerator
@@ -20,17 +19,7 @@ object DatabaseKeyManager {
     fun getPassphrase(context: Context): ByteArray {
         requireHardwareBackedKeystore()
 
-        val masterKey = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-
-        val encryptedPrefs = EncryptedSharedPreferences.create(
-            context,
-            PREFS_FILE_NAME,
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+        val encryptedPrefs = EncryptedPrefsFactory.create(context, PREFS_FILE_NAME)
 
         val existing = encryptedPrefs.getString(KEY_DB_PASSPHRASE, null)
         if (existing != null) {

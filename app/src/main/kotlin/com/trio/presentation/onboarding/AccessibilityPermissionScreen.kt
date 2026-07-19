@@ -34,8 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.trio.R
 import com.trio.service.accessibility.TrioAccessibilityService
 import com.trio.service.notification.TrioNotificationListenerService
 
@@ -53,11 +55,11 @@ fun AccessibilityPermissionScreen(
     AnimatedContent(targetState = step, label = "onboarding_step") { currentStep ->
         when (currentStep) {
             0 -> PermissionStep(
-                title = "Welcome to Trio",
-                description = "Trio needs accessibility access to provide adaptive UI modes for vision and hearing assistance.",
+                title = stringResource(R.string.onboarding_welcome),
+                description = stringResource(R.string.onboarding_accessibility_desc),
                 icon = Icons.Filled.Accessibility,
                 isGranted = accessibilityEnabled,
-                grantLabel = "Open Accessibility Settings",
+                grantLabel = stringResource(R.string.open_accessibility_settings),
                 onGrant = {
                     val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -68,11 +70,11 @@ fun AccessibilityPermissionScreen(
             )
 
             1 -> PermissionStep(
-                title = "Notification Access",
-                description = "Trio needs notification listener access to provide visual alerts and flash notifications for hearing-impaired mode.",
+                title = stringResource(R.string.onboarding_notification_title),
+                description = stringResource(R.string.onboarding_notification_desc),
                 icon = Icons.Filled.Notifications,
                 isGranted = notificationListenerEnabled,
-                grantLabel = "Open Notification Settings",
+                grantLabel = stringResource(R.string.open_notification_settings),
                 onGrant = {
                     val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -136,24 +138,24 @@ private fun PermissionStep(
             if (isGranted) {
                 Icon(
                     imageVector = Icons.Filled.Check,
-                    contentDescription = "Granted",
+                    contentDescription = stringResource(R.string.permission_granted),
                     tint = Color(0xFF4CAF50),
                     modifier = Modifier.size(32.dp)
                 )
                 Text(
-                    text = "Access Granted",
+                    text = stringResource(R.string.access_granted),
                     style = MaterialTheme.typography.titleMedium,
                     color = Color(0xFF4CAF50)
                 )
             } else {
                 Icon(
                     imageVector = Icons.Filled.Warning,
-                    contentDescription = "Not granted",
+                    contentDescription = stringResource(R.string.permission_not_granted),
                     tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(32.dp)
                 )
                 Text(
-                    text = "Access Required",
+                    text = stringResource(R.string.access_required),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -177,7 +179,7 @@ private fun PermissionStep(
             onClick = onNext,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = if (isGranted) "Next" else "Skip for now")
+            Text(text = if (isGranted) stringResource(R.string.next) else stringResource(R.string.skip_for_now))
         }
     }
 }
@@ -201,7 +203,7 @@ private fun CompletionStep(onComplete: () -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "You're All Set",
+            text = stringResource(R.string.onboarding_complete_title),
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center
         )
@@ -209,7 +211,7 @@ private fun CompletionStep(onComplete: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Trio is ready to provide an adaptive launcher experience. You can change permissions anytime in Settings.",
+            text = stringResource(R.string.onboarding_complete_desc),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -221,7 +223,7 @@ private fun CompletionStep(onComplete: () -> Unit) {
             onClick = onComplete,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Start Using Trio")
+            Text(text = stringResource(R.string.start_using_trio))
         }
     }
 }

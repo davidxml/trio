@@ -21,7 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.trio.R
 import com.trio.service.hearing.AlertEvent
 import com.trio.service.hearing.HearingAlertStateHolder
 
@@ -62,7 +64,7 @@ fun VisualAlertBanner(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "${latestAlert.title}: ${latestAlert.body}",
+            text = stringResource(R.string.alert_banner_template, latestAlert.title, latestAlert.body),
             style = MaterialTheme.typography.titleLarge,
             color = Color.White,
             textAlign = TextAlign.Center,

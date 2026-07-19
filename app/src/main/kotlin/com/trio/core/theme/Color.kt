@@ -28,3 +28,12 @@ val HearingSurface = Color(0xFFFFFBFE)
 val HearingOnSurface = Color(0xFF1C1B1F)
 val HearingSurfaceVariant = Color(0xFFE7E0EC)
 val HearingOnSurfaceVariant = Color(0xFF49454F)
+
+val SpeechPrimary = Color(0xFF00897B)
+val SpeechOnPrimary = Color.White
+val SpeechBackground = Color(0xFFF5F5F5)
+val SpeechOnBackground = Color(0xFF212121)
+val SpeechSurface = Color.White
+val SpeechOnSurface = Color(0xFF212121)
+val SpeechSurfaceVariant = Color(0xFFE0F2F1)
+val SpeechOnSurfaceVariant = Color(0xFF4DB6AC)

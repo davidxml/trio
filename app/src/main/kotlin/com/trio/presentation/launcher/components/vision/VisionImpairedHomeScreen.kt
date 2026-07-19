@@ -22,7 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.trio.R
 import com.trio.domain.model.DeviceMode
 import com.trio.presentation.launcher.components.shared.LaunchableApp
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
@@ -65,7 +67,7 @@ fun VisionImpairedHomeScreen(
         apps = withContext(Dispatchers.IO) {
             queryLaunchableApps(context)
         }
-        ttsAnnouncer.announce("Vision Impaired Mode activated. Swipe to explore items.")
+        ttsAnnouncer.announce(context.getString(R.string.vision_mode_activated))
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -77,7 +79,7 @@ fun VisionImpairedHomeScreen(
         ) {
             item {
                 Text(
-                    text = "Trio",
+                    text = stringResource(R.string.app_name),
                     style = MaterialTheme.typography.displayLarge,
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -89,18 +91,18 @@ fun VisionImpairedHomeScreen(
 
             item {
                 HighContrastTouchZone(
-                    label = "Switch to Standard Mode",
+                    label = stringResource(R.string.switch_to_standard),
                     onClick = { onModeSelected(DeviceMode.STANDARD) },
                     hapticController = hapticController,
                     ttsAnnouncer = ttsAnnouncer,
-                    description = "Switch to Standard Mode. Double tap to activate.",
+                    description = stringResource(R.string.switch_to_standard_desc),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
             item {
                 HighContrastTouchZone(
-                    label = "Settings",
+                    label = stringResource(R.string.settings),
                     onClick = {
                         val intent = Intent("com.trio.action.OPEN_SETTINGS").apply {
                             `package` = context.packageName
@@ -110,7 +112,7 @@ fun VisionImpairedHomeScreen(
                     },
                     hapticController = hapticController,
                     ttsAnnouncer = ttsAnnouncer,
-                    description = "Settings. Double tap to open.",
+                    description = stringResource(R.string.settings_desc),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -118,7 +120,7 @@ fun VisionImpairedHomeScreen(
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Applications",
+                    text = stringResource(R.string.applications),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )

@@ -18,8 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.trio.R
 import com.trio.service.hearing.CaptionEntry
 import com.trio.service.hearing.HearingAlertStateHolder
 
@@ -45,7 +47,7 @@ fun LiveCaptionOverlay(
     ) {
         if (captions.isEmpty()) {
             Text(
-                text = "Waiting for audio signals...",
+                text = stringResource(R.string.waiting_for_audio),
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White.copy(alpha = 0.5f),
                 modifier = Modifier.padding(vertical = 24.dp)

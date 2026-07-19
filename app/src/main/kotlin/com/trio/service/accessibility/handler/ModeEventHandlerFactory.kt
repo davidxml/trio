@@ -24,15 +24,20 @@ class ModeEventHandlerFactory(
     private val hearingHandler by lazy {
         HearingModeEventHandler(service, hearingAlertStateHolder)
     }
+    private val speechHandler by lazy {
+        SpeechModeEventHandler(service, hapticController, ttsQueueManager)
+    }
 
     fun getHandler(mode: DeviceMode): ModeEventHandler = when (mode) {
         DeviceMode.VISION_IMPAIRED -> visionHandler
         DeviceMode.HEARING_IMPAIRED -> hearingHandler
-        DeviceMode.STANDARD, DeviceMode.SPEECH_IMPAIRED -> NoOpEventHandler
+        DeviceMode.SPEECH_IMPAIRED -> speechHandler
+        DeviceMode.STANDARD -> NoOpEventHandler
     }
 
     fun destroy() {
         visionHandler.destroy()
+        speechHandler.destroy()
     }
 
     private object NoOpEventHandler : ModeEventHandler {

@@ -40,6 +40,17 @@ private val HearingColorScheme = lightColorScheme(
     onSurfaceVariant = HearingOnSurfaceVariant
 )
 
+private val SpeechImpairedColorScheme = lightColorScheme(
+    primary = SpeechPrimary,
+    onPrimary = SpeechOnPrimary,
+    background = SpeechBackground,
+    onBackground = SpeechOnBackground,
+    surface = SpeechSurface,
+    onSurface = SpeechOnSurface,
+    surfaceVariant = SpeechSurfaceVariant,
+    onSurfaceVariant = SpeechOnSurfaceVariant
+)
+
 @Composable
 fun ModeThemeProvider(
     mode: DeviceMode,
@@ -50,7 +61,7 @@ fun ModeThemeProvider(
         DeviceMode.STANDARD -> StandardColorScheme
         DeviceMode.VISION_IMPAIRED -> HighContrastColorScheme
         DeviceMode.HEARING_IMPAIRED -> HearingColorScheme
-        DeviceMode.SPEECH_IMPAIRED -> StandardColorScheme
+        DeviceMode.SPEECH_IMPAIRED -> SpeechImpairedColorScheme
     }
 
     val baseTypography = when (mode) {
