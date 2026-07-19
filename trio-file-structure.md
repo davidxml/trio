@@ -8,6 +8,7 @@ never drift out of sync. Domain layer has zero Android/Compose imports — testa
 trio/
 ├── app/
 │   ├── build.gradle.kts
+│   ├── proguard-rules.pro
 │   ├── src/main/
 │   │   ├── AndroidManifest.xml
 │   │   └── kotlin/com/trio/
@@ -16,24 +17,22 @@ trio/
 │   │       ├── core/
 │   │       │   ├── di/
 │   │       │   │   ├── AppModule.kt
-│   │       │   │   ├── ServiceModule.kt
 │   │       │   │   └── RepositoryModule.kt
 │   │       │   ├── util/
 │   │       │   │   ├── Constants.kt
-│   │       │   │   └── Extensions.kt
+│   │       │   │   └── EncryptedPrefsFactory.kt
 │   │       │   └── theme/
 │   │       │       ├── Color.kt
 │   │       │       ├── Typography.kt
 │   │       │       ├── Theme.kt
-│   │       │       └── ModeThemeProvider.kt        # maps DeviceMode -> contrast/scale tokens
+│   │       │       └── ModeThemeProvider.kt
 │   │       │
-│   │       ├── domain/                              # pure Kotlin, no Android deps
+│   │       ├── domain/
 │   │       │   ├── model/
-│   │       │   │   ├── DeviceMode.kt                # sealed class: Standard/VisionImpaired/
-│   │       │   │   │                                #   HearingImpaired/SpeechImpaired
-│   │       │   │   ├── ModeConfig.kt                # per-mode capability flags
+│   │       │   │   ├── DeviceMode.kt
+│   │       │   │   ├── ModeConfig.kt
 │   │       │   │   └── HapticPattern.kt
-│   │       │   ├── repository/                      # interfaces only
+│   │       │   ├── repository/
 │   │       │   │   ├── ModeRepository.kt
 │   │       │   │   └── AccessibilityStateRepository.kt
 │   │       │   └── usecase/
@@ -48,20 +47,20 @@ trio/
 │   │       │   │   └── AccessibilityStateRepositoryImpl.kt
 │   │       │   ├── local/
 │   │       │   │   ├── datastore/
-│   │       │   │   │   ├── ModePreferencesDataStore.kt   # persists last-active mode
+│   │       │   │   │   ├── ModePreferencesDataStore.kt
 │   │       │   │   │   └── ModeSerializer.kt
-│   │       │   │   └── db/                               # only if multi-user shared-device profiles
+│   │       │   │   └── db/
 │   │       │   │       ├── TrioDatabase.kt
+│   │       │   │       ├── DatabaseKeyManager.kt
 │   │       │   │       ├── UserProfileDao.kt
 │   │       │   │       └── UserProfileEntity.kt
 │   │       │   └── state/
-│   │       │       └── GlobalModeStateHolder.kt     # single source of truth StateFlow<DeviceMode>
-│   │       │                                          # both LauncherViewModel and the
-│   │       │                                          # AccessibilityService read/write this
+│   │       │       ├── GlobalModeStateHolder.kt
+│   │       │       └── UserProfileStateHolder.kt
 │   │       │
 │   │       ├── presentation/
 │   │       │   ├── launcher/
-│   │       │   │   ├── LauncherActivity.kt          # declares HOME intent-filter
+│   │       │   │   ├── LauncherActivity.kt
 │   │       │   │   ├── LauncherViewModel.kt
 │   │       │   │   ├── LauncherUiState.kt
 │   │       │   │   └── components/
@@ -71,53 +70,81 @@ trio/
 │   │       │   │       ├── vision/
 │   │       │   │       │   ├── VisionImpairedHomeScreen.kt
 │   │       │   │       │   ├── HighContrastTouchZone.kt
-│   │       │   │       │   └── TtsAnnouncer.kt        # Compose-side semantics -> TTS hook
+│   │       │   │       │   └── TtsAnnouncer.kt
 │   │       │   │       ├── hearing/
 │   │       │   │       │   ├── HearingImpairedHomeScreen.kt
+│   │       │   │       │   ├── HearingTouchZone.kt
 │   │       │   │       │   ├── LiveCaptionOverlay.kt
 │   │       │   │       │   └── VisualAlertBanner.kt
+│   │       │   │       ├── speech/
+│   │       │   │       │   ├── SpeechImpairedHomeScreen.kt
+│   │       │   │       │   ├── SpeechTouchZone.kt
+│   │       │   │       │   └── AacChip.kt
 │   │       │   │       └── shared/
 │   │       │   │           ├── ModeSwitcherFab.kt
-│   │       │   │           └── ModeSwitcherDialog.kt
+│   │       │   │           ├── ModeSwitcherDialog.kt
+│   │       │   │           └── LaunchableApp.kt
 │   │       │   ├── settings/
 │   │       │   │   ├── SettingsActivity.kt
 │   │       │   │   ├── SettingsViewModel.kt
-│   │       │   │   └── ProfileManagementScreen.kt   # for shared-device multi-profile use case
+│   │       │   │   └── ProfileManagementScreen.kt
 │   │       │   └── onboarding/
 │   │       │       ├── OnboardingActivity.kt
-│   │       │       └── AccessibilityPermissionScreen.kt  # walks user through granting the service
+│   │       │       └── AccessibilityPermissionScreen.kt
 │   │       │
 │   │       └── service/
 │   │           ├── accessibility/
 │   │           │   ├── TrioAccessibilityService.kt
 │   │           │   ├── handler/
 │   │           │   │   ├── ModeEventHandlerFactory.kt
-│   │           │   │   ├── VisionModeEventHandler.kt    # touch exploration + TTS dispatch
-│   │           │   │   └── HearingModeEventHandler.kt   # notification/audio interception
+│   │           │   │   ├── VisionModeEventHandler.kt
+│   │           │   │   ├── HearingModeEventHandler.kt
+│   │           │   │   └── SpeechModeEventHandler.kt
 │   │           │   └── config/
-│   │           │       └── AccessibilityServiceConfig.kt # dynamic capability toggles per mode
+│   │           │       └── AccessibilityServiceConfig.kt
 │   │           ├── tts/
 │   │           │   ├── TrioTtsEngine.kt
 │   │           │   └── TtsQueueManager.kt
 │   │           ├── haptics/
 │   │           │   ├── HapticFeedbackController.kt
-│   │           │   ├── HapticPatternLibrary.kt          # guidance pulses, alert patterns
-│   │           │   └── VibratorCompatWrapper.kt         # API-level vibrator abstraction
+│   │           │   ├── HapticPatternLibrary.kt
+│   │           │   └── VibratorCompatWrapper.kt
 │   │           ├── camera/
 │   │           │   ├── CameraTorchManager.kt
-│   │           │   └── FlashAlertController.kt          # flash-on-ring for HearingImpaired mode
+│   │           │   └── FlashAlertController.kt
+│   │           ├── hearing/
+│   │           │   └── HearingAlertStateHolder.kt
 │   │           └── notification/
 │   │               ├── TrioNotificationListenerService.kt
 │   │               └── AudioAlertInterceptor.kt
 │   │
-│   └── src/main/res/
-│       ├── xml/
-│       │   └── accessibility_service_config.xml
-│       └── values/
+│   ├── src/main/res/
+│   │   ├── xml/
+│   │   │   └── accessibility_service_config.xml
+│   │   └── values/
+│   │       └── strings.xml
+│   │
+│   └── src/test/kotlin/com/trio/
+│       ├── domain/model/
+│       │   └── ModeConfigTest.kt
+│       ├── data/state/
+│       │   └── GlobalModeStateHolderTest.kt
+│       └── service/hearing/
+│           └── HearingAlertStateHolderTest.kt
 │
 ├── gradle/
 ├── build.gradle.kts
 ├── settings.gradle.kts
 └── README.md
+```
 
-For the presentable version of this project (V1) the file structure has to be trimmed down.
+## Sprint 3 additions
+- `speech/` — Speech Impaired mode UI (SpeechImpairedHomeScreen, SpeechTouchZone, AacChip)
+- `SpeechModeEventHandler.kt` — Accessibility event handler for speech input mode
+- `EncryptedPrefsFactory.kt` — Shared encrypted SharedPreferences factory
+- `HearingAlertStateHolder.kt` — Combined caption + alert state for hearing mode
+- `LaunchableApp.kt` — Shared utility for querying installed launchable apps
+
+## Sprint 5 additions
+- `proguard-rules.pro` — R8 keep rules for Room, Hilt, SQLCipher, Compose, Security Crypto, Serialization
+- Test infrastructure: `src/test/` with ModeConfigTest, GlobalModeStateHolderTest, HearingAlertStateHolderTest

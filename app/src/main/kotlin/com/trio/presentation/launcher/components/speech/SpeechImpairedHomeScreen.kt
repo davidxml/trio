@@ -54,17 +54,6 @@ interface SpeechModeEntryPoint {
     fun hapticController(): HapticFeedbackController
 }
 
-private val presetPhrases = listOf(
-    "Yes",
-    "No",
-    "Thank you",
-    "Help",
-    "I need water",
-    "I need the bathroom",
-    "Call someone",
-    "I'm in pain"
-)
-
 @Composable
 fun SpeechImpairedHomeScreen(
     currentMode: DeviceMode,
@@ -78,6 +67,7 @@ fun SpeechImpairedHomeScreen(
         )
     }
     val hapticController = entryPoint.hapticController()
+    val presetPhrases = context.resources.getStringArray(R.array.speech_preset_phrases).toList()
 
     var apps by remember { mutableStateOf<List<LaunchableApp>>(emptyList()) }
     var bufferText by remember { mutableStateOf("") }

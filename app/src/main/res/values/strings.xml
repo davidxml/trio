@@ -51,9 +51,20 @@
 
     <!-- Vision Mode -->
     <string name="vision_mode_activated">Vision Impaired Mode activated. Swipe to explore items.</string>
+    <string name="double_tap_open_template">%1$s. Double tap to open.</string>
 
     <!-- Speech Impaired Mode -->
     <string name="speech_clear">Clear</string>
     <string name="speech_speak">Speak</string>
     <string name="speech_buffer_placeholder">Type or select a phrase…</string>
+    <string-array name="speech_preset_phrases">
+        <item>Yes</item>
+        <item>No</item>
+        <item>Thank you</item>
+        <item>Help</item>
+        <item>I need water</item>
+        <item>I need the bathroom</item>
+        <item>Call someone</item>
+        <item>I\'m in pain</item>
+    </string-array>
 </resources>
