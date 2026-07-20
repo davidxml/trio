@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -7,16 +9,30 @@ plugins {
     kotlin("kapt")
 }
 
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+
 android {
     namespace = "com.trio"
     compileSdk = 35
 
     defaultConfig {
         applicationId = "com.trio"
-        minSdk = 26          // VibrationEffect.createWaveform w/ amplitude needs 26
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "0.1"
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file(localProps.getProperty("KEYSTORE_FILE", "trio-release.keystore"))
+            storePassword = localProps.getProperty("KEYSTORE_PASSWORD", "")
+            keyAlias = localProps.getProperty("KEY_ALIAS", "")
+            keyPassword = localProps.getProperty("KEY_PASSWORD", "")
+        }
     }
 
     buildTypes {
@@ -24,6 +40,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
