@@ -3,12 +3,15 @@ package com.trio.data.local.db
 import android.content.Context
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyInfo
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import com.trio.core.util.EncryptedPrefsFactory
 import java.security.KeyStore
 import java.security.SecureRandom
 import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
 
 object DatabaseKeyManager {
 
@@ -60,9 +63,15 @@ object DatabaseKeyManager {
         keyGenerator.init(spec)
         val testKey = keyGenerator.generateKey()
 
-        val isHardwareBacked = testKey.javaClass
-            .getMethod("isInsideSecureHardware")
-            .invoke(testKey) as Boolean
+        val keyFactory = SecretKeyFactory.getInstance(
+            KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore"
+        )
+        val keyInfo = keyFactory.getKeySpec(
+            testKey as SecretKey,
+            KeyInfo::class.java
+        ) as KeyInfo
+
+        val isHardwareBacked = keyInfo.isInsideSecureHardware
 
         val keyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
         keyStore.deleteEntry(HARDWARE_CHECK_ALIAS)
