@@ -1,13 +1,16 @@
 package com.trio.presentation.launcher.components.vision
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -32,7 +36,8 @@ fun HighContrastTouchZone(
     hapticController: HapticFeedbackController,
     modifier: Modifier = Modifier,
     ttsAnnouncer: TtsAnnouncer? = null,
-    description: String? = null
+    description: String? = null,
+    icon: ImageBitmap? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
@@ -44,7 +49,7 @@ fun HighContrastTouchZone(
         }
     }
 
-    Box(
+    Row(
         modifier = modifier
             .height(80.dp)
             .clip(RoundedCornerShape(12.dp))
@@ -58,13 +63,24 @@ fun HighContrastTouchZone(
                 hapticController.playBoundaryBuzz()
                 onClick()
             },
-        contentAlignment = Alignment.CenterStart
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        if (icon != null) {
+            Image(
+                bitmap = icon,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(start = 16.dp)
+                    .clip(RoundedCornerShape(10.dp))
+            )
+        }
         Text(
             text = label,
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(horizontal = 24.dp)
+            modifier = Modifier.padding(horizontal = if (icon != null) 8.dp else 24.dp)
         )
     }
 }

@@ -28,6 +28,7 @@ import com.trio.R
 import com.trio.domain.model.DeviceMode
 import com.trio.presentation.launcher.components.shared.LaunchableApp
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
+import com.trio.presentation.launcher.components.shared.loadIcon
 import com.trio.presentation.launcher.components.shared.queryLaunchableApps
 import com.trio.service.haptics.HapticFeedbackController
 import com.trio.service.hearing.HearingAlertStateHolder
@@ -133,6 +134,7 @@ fun HearingImpairedHomeScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     row.forEach { app ->
+                        val icon = remember(app.packageName) { app.loadIcon(context) }
                         HearingTouchZone(
                             label = app.label,
                             onClick = {
@@ -141,7 +143,8 @@ fun HearingImpairedHomeScreen(
                             },
                             hapticController = hapticController,
                             description = app.label,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            icon = icon
                         )
                     }
                     if (row.size < 2) {
