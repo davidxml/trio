@@ -77,6 +77,23 @@
 -keepclassmembers class com.trio.service.tts.** { *; }
 -keepclassmembers class com.trio.service.hearing.** { *; }
 
+# ── TTS Framework Callbacks (R8 strips lambdas passed to TextToSpeech) ──────
+-keep class android.speech.tts.TextToSpeech$OnInitListener { *; }
+-keep class android.speech.tts.TextToSpeech$OnUtteranceProgressListener { *; }
+-keepclassmembers class android.speech.tts.TextToSpeech {
+    public <init>(...);
+}
+# Preserve the named inner classes that R8 may strip as "unused"
+-dontwarn android.speech.tts.**
+
+# ── Icon Loading Pipeline (Drawable → Bitmap → ImageBitmap) ──────────────────
+-keep class androidx.core.graphics.drawable.DrawableKt { *; }
+-keep class androidx.compose.ui.graphics.ImageBitmapKt { *; }
+-keepclassmembers class * extends android.graphics.drawable.Drawable {
+    public android.graphics.Bitmap toBitmap(...);
+}
+-keep class androidx.core.graphics.drawable.** { *; }
+
 # ── Presentation Layer (prevent R8 from stripping click handlers & state) ────
 -keep class com.trio.presentation.launcher.** { *; }
 -keepclassmembers class com.trio.presentation.launcher.** { *; }

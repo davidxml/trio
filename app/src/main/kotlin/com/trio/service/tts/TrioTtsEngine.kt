@@ -3,6 +3,7 @@ package com.trio.service.tts
 import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import androidx.annotation.Keep
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,6 +12,7 @@ import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@Keep
 @Singleton
 class TrioTtsEngine @Inject constructor(
     @ApplicationContext private val context: Context
@@ -19,16 +21,18 @@ class TrioTtsEngine @Inject constructor(
     private val _isReady = MutableStateFlow(false)
     val isReady: StateFlow<Boolean> = _isReady.asStateFlow()
 
-    init {
-        tts = TextToSpeech(context) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                tts?.language = Locale.getDefault()
-                _isReady.value = true
-                Log.d(TAG, "TTS initialized successfully")
-            } else {
-                Log.e(TAG, "TTS initialization failed with status: $status")
-            }
+    private val initListener = TextToSpeech.OnInitListener { status ->
+        if (status == TextToSpeech.SUCCESS) {
+            tts?.language = Locale.getDefault()
+            _isReady.value = true
+            Log.d(TAG, "TTS initialized successfully")
+        } else {
+            Log.e(TAG, "TTS initialization failed with status: $status")
         }
+    }
+
+    init {
+        tts = TextToSpeech(context, initListener)
     }
 
     fun speak(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {

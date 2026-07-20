@@ -39,6 +39,7 @@ import com.trio.R
 import com.trio.domain.model.DeviceMode
 import com.trio.presentation.launcher.components.shared.LaunchableApp
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
+import com.trio.presentation.launcher.components.shared.loadIcon
 import com.trio.presentation.launcher.components.shared.queryLaunchableApps
 import com.trio.service.haptics.HapticFeedbackController
 import dagger.hilt.EntryPoint
@@ -169,6 +170,7 @@ fun SpeechImpairedHomeScreen(
                     userScrollEnabled = false
                 ) {
                     items(apps) { app ->
+                        val icon = remember(app.packageName) { app.loadIcon(context) }
                         SpeechTouchZone(
                             label = app.label,
                             onClick = {
@@ -176,7 +178,8 @@ fun SpeechImpairedHomeScreen(
                                 context.startActivity(app.intent)
                             },
                             hapticController = hapticController,
-                            description = app.label
+                            description = app.label,
+                            icon = icon
                         )
                     }
                 }
