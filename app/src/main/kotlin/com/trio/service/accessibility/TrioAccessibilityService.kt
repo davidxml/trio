@@ -42,6 +42,8 @@ class TrioAccessibilityService : AccessibilityService() {
     private var volumeDownPressed = false
     private var escapeHatchRunnable: Runnable? = null
 
+    private val eventTimestamps = HashMap<Int, Long>(64)
+
     override fun onServiceConnected() {
         super.onServiceConnected()
         accessibilityStateRepository.onAccessibilityServiceConnected()
@@ -60,6 +62,18 @@ class TrioAccessibilityService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event ?: return
+
+        val now = System.currentTimeMillis()
+        val sourceHash = event.source?.hashCode() ?: 0
+        val key = event.eventType xor (sourceHash and 0xFFFF)
+        val last = eventTimestamps[key] ?: 0L
+        if (now - last < EVENT_THROTTLE_MS) return
+        eventTimestamps[key] = now
+
+        if (eventTimestamps.size > 200) {
+            eventTimestamps.clear()
+        }
+
         currentHandler?.handleEvent(event)
     }
 
@@ -114,5 +128,6 @@ class TrioAccessibilityService : AccessibilityService() {
     companion object {
         private const val TAG = "TrioAccessibilityService"
         private const val ESCAPE_HATCH_DELAY_MS = 5000L
+        private const val EVENT_THROTTLE_MS = 150L
     }
 }
