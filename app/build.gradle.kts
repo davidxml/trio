@@ -13,10 +13,19 @@ android {
 
     defaultConfig {
         applicationId = "com.trio"
-        minSdk = 26          // VibrationEffect.createWaveform w/ amplitude needs 26
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "0.1"
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("../trio-release.keystore")
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
+            keyAlias = System.getenv("KEY_ALIAS") ?: ""
+            keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+        }
     }
 
     buildTypes {
@@ -24,6 +33,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
