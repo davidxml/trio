@@ -3,6 +3,7 @@ package com.trio.presentation.launcher.components.speech
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -41,18 +42,23 @@ import com.trio.presentation.launcher.components.shared.LaunchableApp
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
 import com.trio.presentation.launcher.components.shared.loadIcon
 import com.trio.presentation.launcher.components.shared.queryLaunchableApps
+import com.trio.presentation.launcher.components.vision.rememberTtsAnnouncer
 import com.trio.service.haptics.HapticFeedbackController
+import com.trio.service.tts.TtsQueueManager
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.math.ceil
+import kotlin.math.max
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
 interface SpeechModeEntryPoint {
     fun hapticController(): HapticFeedbackController
+    fun ttsManager(): TtsQueueManager
 }
 
 @Composable
@@ -68,6 +74,8 @@ fun SpeechImpairedHomeScreen(
         )
     }
     val hapticController = entryPoint.hapticController()
+    val ttsManager = entryPoint.ttsManager()
+    val ttsAnnouncer = rememberTtsAnnouncer(ttsManager)
     val presetPhrases = context.resources.getStringArray(R.array.speech_preset_phrases).toList()
 
     var apps by remember { mutableStateOf<List<LaunchableApp>>(emptyList()) }
@@ -103,6 +111,7 @@ fun SpeechImpairedHomeScreen(
                         onClick = {
                             if (bufferText.isNotBlank()) {
                                 hapticController.playConfirmation()
+                                ttsAnnouncer.announce(bufferText)
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -159,28 +168,37 @@ fun SpeechImpairedHomeScreen(
             }
 
             item {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(4),
-                    contentPadding = PaddingValues(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.height(
-                        ((apps.size / 4 + if (apps.size % 4 > 0) 1 else 0) * 80).dp
-                    ),
-                    userScrollEnabled = false
-                ) {
-                    items(apps) { app ->
-                        val icon = remember(app.packageName) { app.loadIcon(context) }
-                        SpeechTouchZone(
-                            label = app.label,
-                            onClick = {
-                                app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                context.startActivity(app.intent)
-                            },
-                            hapticController = hapticController,
-                            description = app.label,
-                            icon = icon
-                        )
+                BoxWithConstraints {
+                    val minTileWidth = 120.dp
+                    val columns = max(1, (this.maxWidth.value / minTileWidth.value).toInt())
+                    val rows = ceil(apps.size.toFloat() / columns).toInt()
+                    val tileHeight = 72.dp
+                    val spacing = 8.dp
+                    val gridHeight = if (apps.isEmpty()) 0.dp
+                    else (rows * tileHeight + max(0, rows - 1) * spacing)
+
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = minTileWidth),
+                        contentPadding = PaddingValues(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.height(gridHeight),
+                        userScrollEnabled = false
+                    ) {
+                        items(apps) { app ->
+                            val icon = remember(app.packageName) { app.loadIcon(context) }
+                            SpeechTouchZone(
+                                label = app.label,
+                                onClick = {
+                                    app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(app.intent)
+                                },
+                                hapticController = hapticController,
+                                description = app.label,
+                                icon = icon,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }
