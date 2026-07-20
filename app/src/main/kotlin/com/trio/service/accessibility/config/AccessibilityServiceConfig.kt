@@ -8,7 +8,12 @@ import com.trio.domain.model.DeviceMode
 
 class AccessibilityServiceConfig(private val service: AccessibilityService) {
 
+    private var currentMode: DeviceMode? = null
+
     fun updateForMode(mode: DeviceMode) {
+        if (mode == currentMode) return
+        currentMode = mode
+
         val info = service.serviceInfo ?: return
 
         info.flags = flagsForMode(mode)
