@@ -102,6 +102,30 @@
 -keep class com.trio.data.** { *; }
 -keepclassmembers class com.trio.data.** { *; }
 
+# ── Hearing Mode State Holders (prevent R8 from stripping MutableStateFlow fields) ──
+-keep class com.trio.service.hearing.HearingAlertStateHolder { *; }
+-keepclassmembers class com.trio.service.hearing.HearingAlertStateHolder {
+    private volatile <fields>;
+    private * <fields>;
+}
+
+# ── Compose State Flow Collection (prevent R8 from stripping collectAsState) ──
+-keep class androidx.compose.runtime.collectAsState { *; }
+-keep class kotlinx.coroutines.flow.StateFlow { *; }
+-keep class kotlinx.coroutines.flow.MutableStateFlow { *; }
+
+# ── Hearing UI Composables (prevent R8 from stripping composable functions) ──
+-keep class com.trio.presentation.launcher.components.hearing.** { *; }
+-keepclassmembers class com.trio.presentation.launcher.components.hearing.** { *; }
+
+# ── Notification Listener (prevent R8 from stripping callback methods) ──────
+-keep class com.trio.service.notification.** { *; }
+-keepclassmembers class com.trio.service.notification.** { *; }
+
+# ── Camera/Torch (prevent R8 from stripping Camera2 API callbacks) ──────────
+-keep class com.trio.service.camera.** { *; }
+-keepclassmembers class com.trio.service.camera.** { *; }
+
 # ── General ──────────────────────────────────────────────────────────────────
 -keepattributes Signature
 -keepattributes Exceptions
