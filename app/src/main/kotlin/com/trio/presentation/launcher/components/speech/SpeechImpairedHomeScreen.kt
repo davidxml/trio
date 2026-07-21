@@ -175,7 +175,7 @@ fun SpeechImpairedHomeScreen(
                     val tileHeight = 72.dp
                     val spacing = 8.dp
                     val gridHeight = if (apps.isEmpty()) 0.dp
-                    else (rows * tileHeight + max(0, rows - 1) * spacing)
+                    else tileHeight * rows + spacing * max(0, rows - 1)
 
                     LazyVerticalGrid(
                         columns = GridCells.Adaptive(minSize = minTileWidth),
