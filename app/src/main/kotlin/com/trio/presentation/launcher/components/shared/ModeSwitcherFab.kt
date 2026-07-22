@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.trio.R
 import com.trio.domain.model.DeviceMode
@@ -23,11 +24,18 @@ import com.trio.domain.model.DeviceMode
 fun ModeSwitcherFab(
     currentMode: DeviceMode,
     onModeSelected: (DeviceMode) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    containerColor: Color = Color.Unspecified,
+    contentColor: Color = Color.Unspecified
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
-    FloatingActionButton(onClick = { showDialog = true }, modifier = modifier) {
+    FloatingActionButton(
+        onClick = { showDialog = true },
+        modifier = modifier,
+        containerColor = containerColor,
+        contentColor = contentColor
+    ) {
         Icon(imageVector = Icons.Filled.SwapHoriz, contentDescription = stringResource(R.string.switch_mode))
     }
 
