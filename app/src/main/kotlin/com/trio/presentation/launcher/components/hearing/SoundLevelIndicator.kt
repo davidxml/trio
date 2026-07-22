@@ -22,6 +22,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.trio.R
+import com.trio.core.theme.HearingVisualizerBars
+import com.trio.core.theme.HearingVisualizerCard
 import com.trio.core.theme.HearingSoundActive
 import com.trio.core.theme.HearingSoundMuted
 import com.trio.service.hearing.HearingAlertStateHolder
@@ -45,7 +47,7 @@ fun SoundLevelIndicator(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .background(HearingVisualizerCard)
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -83,8 +85,8 @@ fun SoundLevelIndicator(
                         .height((12 + index * 3).dp)
                         .clip(RoundedCornerShape(4.dp))
                         .background(
-                            if (filled) HearingSoundActive.copy(alpha = 0.5f + 0.5f * animatedLevel)
-                            else HearingSoundMuted.copy(alpha = 0.15f)
+                            if (filled) HearingVisualizerBars.copy(alpha = 0.5f + 0.5f * animatedLevel)
+                            else HearingVisualizerBars.copy(alpha = 0.15f)
                         )
                 )
             }
