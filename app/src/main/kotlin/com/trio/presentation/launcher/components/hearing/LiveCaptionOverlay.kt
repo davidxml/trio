@@ -28,9 +28,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.trio.R
-import com.trio.core.theme.HearingCaptionBg
-import com.trio.core.theme.HearingCaptionSource
-import com.trio.core.theme.HearingCaptionText
+import com.trio.core.theme.HearingCaptionBackground
+import com.trio.core.theme.HearingCaptionHeader
+import com.trio.core.theme.HearingCaptionBody
 import com.trio.service.hearing.CaptionEntry
 import com.trio.service.hearing.HearingAlertStateHolder
 
@@ -52,7 +52,7 @@ fun LiveCaptionOverlay(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(HearingCaptionBg)
+            .background(HearingCaptionBackground)
             .padding(16.dp)
     ) {
         Row(
@@ -63,13 +63,13 @@ fun LiveCaptionOverlay(
             Text(
                 text = stringResource(R.string.live_captions_label),
                 style = MaterialTheme.typography.titleMedium,
-                color = HearingCaptionSource
+                color = HearingCaptionHeader
             )
             if (captions.isNotEmpty()) {
                 Text(
                     text = "${captions.size}",
                     style = MaterialTheme.typography.labelSmall,
-                    color = HearingCaptionSource.copy(alpha = 0.6f)
+                    color = HearingCaptionHeader.copy(alpha = 0.6f)
                 )
             }
         }
@@ -78,7 +78,7 @@ fun LiveCaptionOverlay(
             Text(
                 text = stringResource(R.string.caption_empty_state),
                 style = MaterialTheme.typography.bodyMedium,
-                color = HearingCaptionText.copy(alpha = 0.4f),
+                color = HearingCaptionBody.copy(alpha = 0.4f),
                 modifier = Modifier.padding(vertical = 32.dp)
             )
         } else {
@@ -108,20 +108,20 @@ private fun CaptionItem(entry: CaptionEntry) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
-                .background(HearingCaptionText.copy(alpha = 0.08f))
+                .background(HearingCaptionBody.copy(alpha = 0.08f))
                 .padding(horizontal = 14.dp, vertical = 10.dp)
         ) {
             Text(
                 text = entry.source,
                 style = MaterialTheme.typography.labelSmall,
-                color = HearingCaptionSource,
+                color = HearingCaptionHeader,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = entry.text,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium,
-                color = HearingCaptionText,
+                color = HearingCaptionBody,
                 lineHeight = 26.sp
             )
         }
