@@ -37,12 +37,14 @@ class TrioAccessibilityService : AccessibilityService() {
     private var serviceConfig: AccessibilityServiceConfig? = null
     private var handlerFactory: ModeEventHandlerFactory? = null
     private var currentHandler: ModeEventHandler? = null
+    private var currentMode: DeviceMode = DeviceMode.STANDARD
 
     private var volumeUpPressed = false
     private var volumeDownPressed = false
     private var escapeHatchRunnable: Runnable? = null
 
     private val eventTimestamps = HashMap<Int, Long>(64)
+    private val selfPackageName: String by lazy { packageName }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -53,6 +55,7 @@ class TrioAccessibilityService : AccessibilityService() {
         scope.launch {
             stateHolder.mode.collect { mode ->
                 Log.d(TAG, "Mode changed: $mode")
+                currentMode = mode
                 serviceConfig?.updateForMode(mode)
                 currentHandler = handlerFactory?.getHandler(mode)
                 Log.d(TAG, "Handler swapped to: ${currentHandler?.javaClass?.simpleName}")
@@ -63,7 +66,11 @@ class TrioAccessibilityService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event ?: return
 
+        val eventPackage = event.packageName?.toString()
+        if (eventPackage == selfPackageName) return
+
         val now = System.currentTimeMillis()
+
         val sourceHash = event.source?.hashCode() ?: 0
         val key = event.eventType xor (sourceHash and 0xFFFF)
         val last = eventTimestamps[key] ?: 0L

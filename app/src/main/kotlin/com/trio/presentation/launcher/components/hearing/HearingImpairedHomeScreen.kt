@@ -1,8 +1,10 @@
 package com.trio.presentation.launcher.components.hearing
 
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -60,6 +63,8 @@ fun HearingImpairedHomeScreen(
     }
     val hapticController = entryPoint.hapticController()
     val alertStateHolder = entryPoint.alertStateHolder()
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     var apps by remember { mutableStateOf<List<LaunchableApp>>(emptyList()) }
 
@@ -71,91 +76,22 @@ fun HearingImpairedHomeScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            item {
-                VisualAlertBanner(alertStateHolder = alertStateHolder)
-            }
-
-            item {
-                Text(
-                    text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.displayLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            item {
-                HearingTouchZone(
-                    label = stringResource(R.string.switch_to_standard),
-                    onClick = { onModeSelected(DeviceMode.STANDARD) },
-                    hapticController = hapticController,
-                    description = stringResource(R.string.switch_to_standard),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            item {
-                HearingTouchZone(
-                    label = stringResource(R.string.settings),
-                    onClick = {
-                        val intent = Intent("com.trio.action.OPEN_SETTINGS").apply {
-                            `package` = context.packageName
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        }
-                        context.startActivity(intent)
-                    },
-                    hapticController = hapticController,
-                    description = stringResource(R.string.settings),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.applications),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            items(apps.chunked(2)) { row ->
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    row.forEach { app ->
-                        val icon = remember(app.packageName) { app.loadIcon(context) }
-                        HearingTouchZone(
-                            label = app.label,
-                            onClick = {
-                                app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                context.startActivity(app.intent)
-                            },
-                            hapticController = hapticController,
-                            description = app.label,
-                            modifier = Modifier.weight(1f),
-                            icon = icon
-                        )
-                    }
-                    if (row.size < 2) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
-            }
-
-            item {
-                LiveCaptionOverlay(alertStateHolder = alertStateHolder)
-            }
+        if (isLandscape) {
+            LandscapeHearingLayout(
+                currentMode = currentMode,
+                onModeSelected = onModeSelected,
+                apps = apps,
+                alertStateHolder = alertStateHolder,
+                hapticController = hapticController
+            )
+        } else {
+            PortraitHearingLayout(
+                currentMode = currentMode,
+                onModeSelected = onModeSelected,
+                apps = apps,
+                alertStateHolder = alertStateHolder,
+                hapticController = hapticController
+            )
         }
 
         ModeSwitcherFab(
@@ -165,5 +101,214 @@ fun HearingImpairedHomeScreen(
                 .align(Alignment.BottomEnd)
                 .padding(24.dp)
         )
+    }
+}
+
+@Composable
+private fun PortraitHearingLayout(
+    currentMode: DeviceMode,
+    onModeSelected: (DeviceMode) -> Unit,
+    apps: List<LaunchableApp>,
+    alertStateHolder: HearingAlertStateHolder,
+    hapticController: HapticFeedbackController
+) {
+    val context = LocalContext.current
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            VisualAlertBanner(alertStateHolder = alertStateHolder)
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+
+        item {
+            Text(
+                text = stringResource(R.string.hearing_mode_title),
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+
+        item {
+            SoundLevelIndicator(alertStateHolder = alertStateHolder)
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+
+        item {
+            HearingTouchZone(
+                label = stringResource(R.string.switch_to_standard),
+                onClick = { onModeSelected(DeviceMode.STANDARD) },
+                hapticController = hapticController,
+                description = stringResource(R.string.switch_to_standard),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        item {
+            HearingTouchZone(
+                label = stringResource(R.string.settings),
+                onClick = {
+                    val intent = Intent("com.trio.action.OPEN_SETTINGS").apply {
+                        `package` = context.packageName
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    context.startActivity(intent)
+                },
+                hapticController = hapticController,
+                description = stringResource(R.string.settings),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = stringResource(R.string.applications),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+
+        items(apps.chunked(2)) { row ->
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                row.forEach { app ->
+                    val icon = remember(app.packageName) { app.loadIcon(context) }
+                    HearingTouchZone(
+                        label = app.label,
+                        onClick = {
+                            app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(app.intent)
+                        },
+                        hapticController = hapticController,
+                        description = app.label,
+                        modifier = Modifier.weight(1f),
+                        icon = icon
+                    )
+                }
+                if (row.size < 2) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+            LiveCaptionOverlay(alertStateHolder = alertStateHolder)
+        }
+    }
+}
+
+@Composable
+private fun LandscapeHearingLayout(
+    currentMode: DeviceMode,
+    onModeSelected: (DeviceMode) -> Unit,
+    apps: List<LaunchableApp>,
+    alertStateHolder: HearingAlertStateHolder,
+    hapticController: HapticFeedbackController
+) {
+    val context = LocalContext.current
+
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            VisualAlertBanner(alertStateHolder = alertStateHolder)
+
+            Text(
+                text = stringResource(R.string.hearing_mode_title),
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            SoundLevelIndicator(alertStateHolder = alertStateHolder)
+
+            HearingTouchZone(
+                label = stringResource(R.string.switch_to_standard),
+                onClick = { onModeSelected(DeviceMode.STANDARD) },
+                hapticController = hapticController,
+                description = stringResource(R.string.switch_to_standard),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            HearingTouchZone(
+                label = stringResource(R.string.settings),
+                onClick = {
+                    val intent = Intent("com.trio.action.OPEN_SETTINGS").apply {
+                        `package` = context.packageName
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    context.startActivity(intent)
+                },
+                hapticController = hapticController,
+                description = stringResource(R.string.settings),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .weight(1.2f)
+                .padding(vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.applications),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                items(apps.chunked(2)) { row ->
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        row.forEach { app ->
+                            val icon = remember(app.packageName) { app.loadIcon(context) }
+                            HearingTouchZone(
+                                label = app.label,
+                                onClick = {
+                                    app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(app.intent)
+                                },
+                                hapticController = hapticController,
+                                description = app.label,
+                                modifier = Modifier.weight(1f),
+                                icon = icon
+                            )
+                        }
+                        if (row.size < 2) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+
+            LiveCaptionOverlay(alertStateHolder = alertStateHolder)
+        }
     }
 }

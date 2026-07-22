@@ -1,27 +1,36 @@
 package com.trio.presentation.launcher.components.hearing
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.trio.R
+import com.trio.core.theme.HearingCaptionBg
+import com.trio.core.theme.HearingCaptionSource
+import com.trio.core.theme.HearingCaptionText
 import com.trio.service.hearing.CaptionEntry
 import com.trio.service.hearing.HearingAlertStateHolder
 
@@ -39,26 +48,49 @@ fun LiveCaptionOverlay(
         }
     }
 
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color.Black.copy(alpha = 0.85f))
+            .clip(RoundedCornerShape(16.dp))
+            .background(HearingCaptionBg)
             .padding(16.dp)
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.live_captions_label),
+                style = MaterialTheme.typography.titleMedium,
+                color = HearingCaptionSource
+            )
+            if (captions.isNotEmpty()) {
+                Text(
+                    text = "${captions.size}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = HearingCaptionSource.copy(alpha = 0.6f)
+                )
+            }
+        }
+
         if (captions.isEmpty()) {
             Text(
-                text = stringResource(R.string.waiting_for_audio),
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White.copy(alpha = 0.5f),
-                modifier = Modifier.padding(vertical = 24.dp)
+                text = stringResource(R.string.caption_empty_state),
+                style = MaterialTheme.typography.bodyMedium,
+                color = HearingCaptionText.copy(alpha = 0.4f),
+                modifier = Modifier.padding(vertical = 32.dp)
             )
         } else {
             LazyColumn(
                 state = listState,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(vertical = 8.dp)
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 120.dp, max = 320.dp)
+                    .padding(top = 8.dp)
             ) {
-                items(captions) { entry ->
+                items(captions, key = { "${it.timestamp}-${it.textHash}" }) { entry ->
                     CaptionItem(entry)
                 }
             }
@@ -68,24 +100,30 @@ fun LiveCaptionOverlay(
 
 @Composable
 private fun CaptionItem(entry: CaptionEntry) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White.copy(alpha = 0.1f), shape = MaterialTheme.shapes.small)
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+    AnimatedVisibility(
+        visible = true,
+        enter = fadeIn(initialAlpha = 0.3f)
     ) {
-        Text(
-            text = entry.source,
-            style = MaterialTheme.typography.labelMedium,
-            color = Color(0xFF80CBC4),
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = entry.text,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.White,
-            lineHeight = 28.sp
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .background(HearingCaptionText.copy(alpha = 0.08f))
+                .padding(horizontal = 14.dp, vertical = 10.dp)
+        ) {
+            Text(
+                text = entry.source,
+                style = MaterialTheme.typography.labelSmall,
+                color = HearingCaptionSource,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = entry.text,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Medium,
+                color = HearingCaptionText,
+                lineHeight = 26.sp
+            )
+        }
     }
 }

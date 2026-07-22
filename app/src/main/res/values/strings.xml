@@ -37,6 +37,13 @@
     <!-- Hearing Mode -->
     <string name="waiting_for_audio">Waiting for audio signals…</string>
     <string name="alert_banner_template">%1$s: %2$s</string>
+    <string name="sound_level_active">Sound detected</string>
+    <string name="sound_level_quiet">Quiet environment</string>
+    <string name="live_captions_label">Live Captions</string>
+    <string name="hearing_mode_title">Hearing Assistance</string>
+    <string name="caption_empty_state">Captions will appear here when audio is detected</string>
+    <string name="dismiss_alert">Dismiss alert</string>
+    <string name="sound_visualizer_label">Sound Visualizer</string>
 
     <!-- Profile Management -->
     <string name="user_profiles">User Profiles</string>
