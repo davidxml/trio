@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.trio.R
+import com.trio.core.theme.StandardFab
 import com.trio.domain.model.DeviceMode
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
 
@@ -43,7 +44,8 @@ fun StandardHomeScreen(
             onModeSelected = onModeSelected,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(24.dp)
+                .padding(24.dp),
+            containerColor = StandardFab
         )
     }
 }

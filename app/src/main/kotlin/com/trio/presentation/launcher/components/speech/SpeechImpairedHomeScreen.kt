@@ -37,6 +37,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.trio.R
+import com.trio.core.theme.SpeechFab
+import com.trio.core.theme.SpeechPrimaryAction
 import com.trio.domain.model.DeviceMode
 import com.trio.presentation.launcher.components.shared.LaunchableApp
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
@@ -115,7 +117,7 @@ fun SpeechImpairedHomeScreen(
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
+                            containerColor = SpeechPrimaryAction
                         )
                     ) {
                         Text(text = stringResource(R.string.speech_speak))
@@ -209,7 +211,8 @@ fun SpeechImpairedHomeScreen(
             onModeSelected = onModeSelected,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(24.dp)
+                .padding(24.dp),
+            containerColor = SpeechFab
         )
     }
 }

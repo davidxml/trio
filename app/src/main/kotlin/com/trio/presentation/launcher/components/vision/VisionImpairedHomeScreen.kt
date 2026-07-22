@@ -23,8 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.foundation.background
 import androidx.compose.ui.unit.dp
 import com.trio.R
+import com.trio.core.theme.VisionAccentYellow
+import com.trio.core.theme.VisionFab
+import com.trio.core.theme.VisionFabIcon
+import com.trio.core.theme.VisionSurfaceBlack
 import com.trio.domain.model.DeviceMode
 import com.trio.presentation.launcher.components.shared.LaunchableApp
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
@@ -79,11 +84,18 @@ fun VisionImpairedHomeScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Text(
-                    text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.displayLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(VisionSurfaceBlack)
+                        .padding(horizontal = 24.dp, vertical = 16.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.app_name),
+                        style = MaterialTheme.typography.displayLarge,
+                        color = VisionAccentYellow
+                    )
+                }
             }
 
             item {
@@ -120,11 +132,18 @@ fun VisionImpairedHomeScreen(
 
             item {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.applications),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(VisionSurfaceBlack)
+                        .padding(horizontal = 24.dp, vertical = 12.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.applications),
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = VisionAccentYellow
+                    )
+                }
             }
 
             items(apps.chunked(2)) { row ->
@@ -159,7 +178,9 @@ fun VisionImpairedHomeScreen(
             onModeSelected = onModeSelected,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(24.dp)
+                .padding(24.dp),
+            containerColor = VisionFab,
+            contentColor = VisionFabIcon
         )
     }
 }

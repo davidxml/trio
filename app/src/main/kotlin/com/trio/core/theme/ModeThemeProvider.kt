@@ -1,7 +1,6 @@
 package com.trio.core.theme
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
@@ -18,11 +17,11 @@ private val StandardColorScheme = lightColorScheme(
     onSurfaceVariant = StandardOnSurfaceVariant
 )
 
-private val HighContrastColorScheme = darkColorScheme(
+private val HighContrastColorScheme = lightColorScheme(
     primary = HighContrastPrimary,
     onPrimary = HighContrastOnPrimary,
-    background = HighContrastBackground,
-    onBackground = HighContrastOnBackground,
+    background = VisionCanvas,
+    onBackground = VisionSurfaceBlack,
     surface = HighContrastSurface,
     onSurface = HighContrastOnSurface,
     surfaceVariant = HighContrastSurfaceVariant,
