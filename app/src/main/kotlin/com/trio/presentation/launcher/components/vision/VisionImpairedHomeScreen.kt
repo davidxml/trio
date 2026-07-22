@@ -1,6 +1,7 @@
 package com.trio.presentation.launcher.components.vision
 
 import android.content.Intent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -23,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.foundation.background
 import androidx.compose.ui.unit.dp
 import com.trio.R
 import com.trio.core.theme.VisionAccentYellow
@@ -31,6 +31,8 @@ import com.trio.core.theme.VisionFab
 import com.trio.core.theme.VisionFabIcon
 import com.trio.core.theme.VisionSurfaceBlack
 import com.trio.domain.model.DeviceMode
+import com.trio.presentation.launcher.components.shared.AppGridTile
+import com.trio.presentation.launcher.components.shared.AppHeader
 import com.trio.presentation.launcher.components.shared.LaunchableApp
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
 import com.trio.presentation.launcher.components.shared.loadIcon
@@ -80,22 +82,11 @@ fun VisionImpairedHomeScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 32.dp),
+                .padding(horizontal = 16.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(VisionSurfaceBlack)
-                        .padding(horizontal = 24.dp, vertical = 16.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.displayLarge,
-                        color = VisionAccentYellow
-                    )
-                }
+                AppHeader(title = stringResource(R.string.app_name))
             }
 
             item {
@@ -148,20 +139,17 @@ fun VisionImpairedHomeScreen(
 
             items(apps.chunked(2)) { row ->
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     row.forEach { app ->
                         val icon = remember(app.packageName) { app.loadIcon(context) }
-                        HighContrastTouchZone(
+                        AppGridTile(
                             label = app.label,
                             onClick = {
                                 app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 context.startActivity(app.intent)
                             },
-                            hapticController = hapticController,
-                            ttsAnnouncer = ttsAnnouncer,
-                            description = stringResource(R.string.double_tap_open_template, app.label),
                             modifier = Modifier.weight(1f),
                             icon = icon
                         )

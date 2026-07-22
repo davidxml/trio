@@ -3,8 +3,6 @@ package com.trio.presentation.launcher.components.speech
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,9 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -40,6 +35,8 @@ import com.trio.R
 import com.trio.core.theme.SpeechFab
 import com.trio.core.theme.SpeechPrimaryAction
 import com.trio.domain.model.DeviceMode
+import com.trio.presentation.launcher.components.shared.AppGridTile
+import com.trio.presentation.launcher.components.shared.AppHeader
 import com.trio.presentation.launcher.components.shared.LaunchableApp
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
 import com.trio.presentation.launcher.components.shared.loadIcon
@@ -53,8 +50,6 @@ import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.math.ceil
-import kotlin.math.max
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
@@ -96,6 +91,10 @@ fun SpeechImpairedHomeScreen(
                 .padding(horizontal = 16.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            item {
+                AppHeader(title = stringResource(R.string.app_name))
+            }
+
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -169,38 +168,25 @@ fun SpeechImpairedHomeScreen(
                 )
             }
 
-            item {
-                BoxWithConstraints {
-                    val minTileWidth = 120.dp
-                    val columns = max(1, (this.maxWidth.value / minTileWidth.value).toInt())
-                    val rows = ceil(apps.size.toFloat() / columns).toInt()
-                    val tileHeight = 72.dp
-                    val spacing = 8.dp
-                    val gridHeight = if (apps.isEmpty()) 0.dp
-                    else tileHeight * rows + spacing * max(0, rows - 1)
-
-                    LazyVerticalGrid(
-                        columns = GridCells.Adaptive(minSize = minTileWidth),
-                        contentPadding = PaddingValues(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.height(gridHeight),
-                        userScrollEnabled = false
-                    ) {
-                        items(apps) { app ->
-                            val icon = remember(app.packageName) { app.loadIcon(context) }
-                            SpeechTouchZone(
-                                label = app.label,
-                                onClick = {
-                                    app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    context.startActivity(app.intent)
-                                },
-                                hapticController = hapticController,
-                                description = app.label,
-                                icon = icon,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
+            items(apps.chunked(2)) { row ->
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    row.forEach { app ->
+                        val icon = remember(app.packageName) { app.loadIcon(context) }
+                        AppGridTile(
+                            label = app.label,
+                            onClick = {
+                                app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                context.startActivity(app.intent)
+                            },
+                            modifier = Modifier.weight(1f),
+                            icon = icon
+                        )
+                    }
+                    if (row.size < 2) {
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }

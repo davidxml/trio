@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import com.trio.R
 import com.trio.core.theme.HearingFab
 import com.trio.domain.model.DeviceMode
+import com.trio.presentation.launcher.components.shared.AppGridTile
+import com.trio.presentation.launcher.components.shared.AppHeader
 import com.trio.presentation.launcher.components.shared.LaunchableApp
 import com.trio.presentation.launcher.components.shared.ModeSwitcherFab
 import com.trio.presentation.launcher.components.shared.loadIcon
@@ -119,7 +121,7 @@ private fun PortraitHearingLayout(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 32.dp),
+            .padding(horizontal = 16.dp, vertical = 32.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
@@ -131,11 +133,7 @@ private fun PortraitHearingLayout(
         }
 
         item {
-            Text(
-                text = stringResource(R.string.hearing_mode_title),
-                style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            AppHeader(title = stringResource(R.string.app_name))
         }
 
         item {
@@ -183,19 +181,17 @@ private fun PortraitHearingLayout(
 
         items(apps.chunked(2)) { row ->
             Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(14.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 row.forEach { app ->
                     val icon = remember(app.packageName) { app.loadIcon(context) }
-                    HearingTouchZone(
+                    AppGridTile(
                         label = app.label,
                         onClick = {
                             app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             context.startActivity(app.intent)
                         },
-                        hapticController = hapticController,
-                        description = app.label,
                         modifier = Modifier.weight(1f),
                         icon = icon
                     )
@@ -226,7 +222,7 @@ private fun LandscapeHearingLayout(
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 20.dp),
+            .padding(horizontal = 16.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         Column(
@@ -237,11 +233,7 @@ private fun LandscapeHearingLayout(
         ) {
             VisualAlertBanner(alertStateHolder = alertStateHolder)
 
-            Text(
-                text = stringResource(R.string.hearing_mode_title),
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            AppHeader(title = stringResource(R.string.app_name))
 
             SoundLevelIndicator(alertStateHolder = alertStateHolder)
 
@@ -281,24 +273,22 @@ private fun LandscapeHearingLayout(
             )
 
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
                 modifier = Modifier.weight(1f)
             ) {
                 items(apps.chunked(2)) { row ->
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         row.forEach { app ->
                             val icon = remember(app.packageName) { app.loadIcon(context) }
-                            HearingTouchZone(
+                            AppGridTile(
                                 label = app.label,
                                 onClick = {
                                     app.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                     context.startActivity(app.intent)
                                 },
-                                hapticController = hapticController,
-                                description = app.label,
                                 modifier = Modifier.weight(1f),
                                 icon = icon
                             )
